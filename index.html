@@ -36,7 +36,6 @@
         .chat-receive { background: #262626; color: #e5e5e5; align-self: flex-start; border-bottom-left-radius: 4px; }
         .chat-send { background: #15803d; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         
-        /* 收支標籤樣式 */
         .type-income { color: #4ade80; border: 1px solid #4ade80; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
         .type-expense { color: #f87171; border: 1px solid #f87171; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
     </style>
@@ -68,7 +67,6 @@
         <div id="chat-content" class="flex-1 p-4 flex flex-col scrollable">
             <div class="text-[11px] text-neutral-600 text-center my-4 tracking-widest font-digital">CONNECT_STABLE_09:41</div>
             <div class="chat-bubble chat-receive">系統訊息：身分驗證成功，歡迎回到指揮中心。</div>
-            <div class="chat-bubble chat-receive">行動組：目標已確認，請示下一步指令。</div>
         </div>
         <div class="p-4 bg-neutral-900 flex gap-2">
             <input type="text" id="chat-input" class="flex-1 bg-black border border-neutral-800 rounded-full px-4 py-2 text-sm focus:outline-none" placeholder="輸入訊息...">
@@ -116,12 +114,16 @@
 
             <div id="deposit-view" class="hidden">
                 <div class="glass-dark rounded-xl p-6 space-y-4">
-                    <p class="text-[10px] text-neutral-500">※ 此處調整將直接改動「資產清單」數據</p>
-                    <select id="denomination" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-green-500 font-digital text-xl">
-                        <option value="1000">1,000</option><option value="500">500</option><option value="100">100</option>
-                    </select>
-                    <input type="text" id="notes" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-sm text-green-500" placeholder="來源備註...">
-                    <button id="deposit-btn" class="w-full btn-green py-4 rounded-xl font-bold">執行資產存入</button>
+                    <p class="text-[10px] text-neutral-500 uppercase tracking-widest">Manual Data Entry</p>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-green-900 ml-1">資產變動金額</label>
+                        <input type="number" id="manual-amount" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-green-500 font-digital text-2xl focus:border-green-600 focus:outline-none" placeholder="0">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-green-900 ml-1">資產標籤 / 備註</label>
+                        <input type="text" id="notes" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-sm text-green-500 focus:border-green-600 focus:outline-none" placeholder="例如: 獎金、備用金...">
+                    </div>
+                    <button id="deposit-btn" class="w-full btn-green py-4 rounded-xl font-bold mt-2">執行資產更新程序</button>
                 </div>
             </div>
         </div>
@@ -130,7 +132,6 @@
     <div id="emergency-screen" class="hidden fixed inset-0 z-[200] bg-red-950 flex flex-col items-center justify-center p-8 text-center text-red-500 font-mono">
         <div class="text-7xl mb-6">⚠️</div>
         <h1 class="text-2xl font-bold text-white mb-2 tracking-tighter">TERMINAL_LOCKED</h1>
-        <p class="text-xs mb-8 underline">偵測到多次異常登入，IP 已上傳</p>
         <div id="client-ip" class="text-lg font-bold">FETCHING_IP...</div>
     </div>
 
@@ -151,7 +152,6 @@
         }
 
         function init() {
-            // 登入邏輯
             document.getElementById('auth-btn').onclick = () => {
                 const val = document.getElementById('auth-code').value;
                 if(val === '981103' || val === '990420') {
@@ -169,7 +169,6 @@
                 }
             };
 
-            // /a 指令切換
             const handleChat = () => {
                 const inp = document.getElementById('chat-input');
                 if(inp.value.trim() === '/a') {
@@ -184,12 +183,10 @@
             };
             document.getElementById('chat-send').onclick = handleChat;
 
-            // 收支類型切換
             document.getElementById('btn-type-income').onclick = () => setLogType('收入');
             document.getElementById('btn-type-expense').onclick = () => setLogType('支出');
             document.getElementById('log-save-btn').onclick = saveLog;
 
-            // 基礎資產功能
             document.getElementById('deposit-btn').onclick = deposit;
             document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
             document.getElementById('tab-log').onclick = () => switchTab('log');
@@ -212,25 +209,31 @@
             const reason = document.getElementById('log-reason').value;
             if(!amount || !reason) return alert('金額與原因不可為空');
             
-            financialLogs.push({
-                id: Date.now(),
-                type: currentLogType,
-                amount: amount,
-                reason: reason,
-                time: new Date().toLocaleTimeString()
-            });
+            financialLogs.push({ id: Date.now(), type: currentLogType, amount: amount, reason: reason, time: new Date().toLocaleTimeString() });
             localStorage.setItem('nsb_logs', JSON.stringify(financialLogs));
             document.getElementById('log-amount').value = '';
             document.getElementById('log-reason').value = '';
             renderAll();
-            alert('收支紀錄已存檔，請記得手動調整現金資產。');
+            alert('紀錄已存檔。請記得手動切換至「數據錄入」更新現金總量。');
         }
 
+        // 修改後的資產錄入邏輯
         function deposit() {
-            const amount = parseInt(document.getElementById('denomination').value);
+            const amountInput = document.getElementById('manual-amount');
+            const amount = parseInt(amountInput.value);
             const note = document.getElementById('notes').value;
-            walletData.push({ id: Date.now(), denomination: amount, notes: note, time: new Date().toLocaleTimeString() });
+            
+            if(isNaN(amount)) return alert('請輸入有效金額');
+
+            walletData.push({ 
+                id: Date.now(), 
+                denomination: amount, 
+                notes: note || '未分類數據', 
+                time: new Date().toLocaleTimeString() 
+            });
+            
             localStorage.setItem('nsb_assets', JSON.stringify(walletData));
+            amountInput.value = '';
             document.getElementById('notes').value = '';
             renderAll();
             switchTab('wallet');
@@ -243,24 +246,25 @@
             
             ['tab-wallet', 'tab-log', 'tab-deposit'].forEach(id => {
                 const isActive = id === `tab-${tab}`;
-                document.getElementById(id).className = isActive ? 'flex-1 py-2 rounded-lg text-xs bg-green-800 text-white font-bold' : 'flex-1 py-2 rounded-lg text-xs text-neutral-500';
+                document.getElementById(id).className = isActive ? 'flex-1 py-2 rounded-lg text-xs bg-green-800 text-white font-bold shadow-lg' : 'flex-1 py-2 rounded-lg text-xs text-neutral-500';
             });
         }
 
         function renderAll() {
-            // 渲染資產清單
             const list = document.getElementById('wallet-list');
             if(walletData.length > 0) {
                 document.getElementById('empty-state').classList.add('hidden');
                 list.innerHTML = walletData.slice().reverse().map(i => `
-                    <div class="bg-neutral-900 rounded-xl p-4 flex justify-between items-center border-l-2 border-green-700">
-                        <div><p class="font-digital text-green-500">NT$ ${i.denomination}</p><p class="text-[9px] text-neutral-600">${i.notes || '無備註'}</p></div>
-                        <button onclick="removeAsset(${i.id})" class="text-red-900 text-xs">移除</button>
+                    <div class="bg-neutral-900 rounded-xl p-4 flex justify-between items-center border-l-2 border-green-700 shadow-sm">
+                        <div>
+                            <p class="font-digital text-green-500 text-lg">NT$ ${i.denomination.toLocaleString()}</p>
+                            <p class="text-[10px] text-neutral-600">${i.time} | ${i.notes}</p>
+                        </div>
+                        <button onclick="removeAsset(${i.id})" class="text-red-900 text-[10px] bg-red-900/10 px-2 py-1 rounded">移除</button>
                     </div>
                 `).join('');
             } else { document.getElementById('empty-state').classList.remove('hidden'); list.innerHTML = ''; }
 
-            // 渲染收支紀錄
             document.getElementById('log-list').innerHTML = financialLogs.slice().reverse().map(l => `
                 <div class="bg-neutral-900/40 p-3 rounded flex justify-between items-center border-b border-neutral-800">
                     <div>
@@ -268,7 +272,7 @@
                         <span class="text-sm ml-2 font-bold">${l.reason}</span>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs font-digital ${l.type === '收入' ? 'text-green-400' : 'text-red-400'}">${l.type === '收入' ? '+' : '-'} ${l.amount}</p>
+                        <p class="text-xs font-digital ${l.type === '收入' ? 'text-green-400' : 'text-red-400'}">${l.type === '收入' ? '+' : '-'} ${parseInt(l.amount).toLocaleString()}</p>
                         <p class="text-[8px] text-neutral-600">${l.time}</p>
                     </div>
                 </div>
