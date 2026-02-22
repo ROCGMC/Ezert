@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ezert PWA</title>
+    <title>Ezert MDM</title>
     <link rel="manifest" href="/Ezert/manifest.json">
     <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="icon.png">
-    <style>
-        body { margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif; }
-        .box { text-align: center; border: 2px solid #333; padding: 20px; border-radius: 15px; }
-    </style>
+    <link rel="apple-touch-icon" href="/Ezert/icon.png">
 </head>
 <body>
-    <div class="box">
-        <h1>Ezert</h1>
-        <p id="status">檢查 PWA 狀態中...</p>
+    <div style="text-align:center; padding-top:50px;">
+        <h1>Ezert 系統</h1>
+        <p id="sw-status">Service Worker 檢查中...</p>
     </div>
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/Ezert/sw.js')
-                .then(() => document.getElementById('status').innerText = "PWA 已就緒")
-                .catch(err => document.getElementById('status').innerText = "註冊失敗");
+            window.addEventListener('load', () => {
+                // 註冊時也指定 Scope
+                navigator.serviceWorker.register('/Ezert/sw.js', { scope: '/Ezert/' })
+                    .then(reg => {
+                        console.log('註冊成功');
+                        document.getElementById('sw-status').innerText = "PWA 已就緒 (已連線)";
+                    })
+                    .catch(err => {
+                        document.getElementById('sw-status').innerText = "註冊失敗: " + err;
+                    });
+            });
         }
     </script>
 </body>
