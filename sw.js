@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ezert-v1';
+const CACHE_NAME = 'ezert-v3';
 const ASSETS = [
-  '/Ezert/',
-  '/Ezert/index.html',
-  '/Ezert/manifest.json',
-  '/Ezert/icon.png'
+  './',
+  'index.html',
+  'manifest.json',
+  'icon.png'
 ];
 
 self.addEventListener('install', (e) => {
