@@ -7,13 +7,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="資產管理">
   <meta name="theme-color" content="#0a0a0a">
-  <meta name="description" content="國家安全局情報回覆系統 - 資產管理應用">
-  <meta name="application-name" content="國家安全局情報回覆系統">
-  <meta name="msapplication-TileColor" content="#0a0a0a">
-  <meta name="msapplication-config" content="none">
-  <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIuS6kOi5qOaYjumZryDlrZfmsLTnsbvnqIvnkIbpnIDopoHkurrkuK3nn63kuK3nqIvpn5LlvIXnuqfov5nkuI3mgJ3mlLblpKflpIfnp4siLAogICJzaG9ydF9uYW1lIjogIuWtl+awuCDmm7/lpJfigpxBc3NldCBNZ21ugpwiLAogICJzdGFydF91cmwiOiAiLyIsCiAgInNjb3BlIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYTBhMGEiLAogICJ0aGVtZV9jb2xvciI6ICIjMjJjNTVlIiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3oxbElIZHBaSFJvUFNJeE16TTBJaUJvWldsbmFIUTlJakV6TXpRaUlIWnBaWGRDYjNnOUlqQWdNQ0F3TVRJeE1DQXdNVEl4UEM5MGVHRnNiRzl1Ymk5bWIyOTBJSFJsZW1GdmJGUjVjR1U5Wm1Gc2MyVSIsCiAgICAgICJzaXplcyI6ICI5Mng5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLAogICAgICAicHVycG9zZSI6ICJhbnkiCiAgICB9LAogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3oxbElIZHBaSFJvUFNJeE16TTBJaUJvWldsbmFIUTlJakV6TXpRaUlIWnBaWGRDYjNnOUlqQWdNQ0F3TVRJeE1DQXdNVEl4UEM5MGVHRnNiRzl1Ymk5bWIyOTBJSFJsZW1GdmJGUjVjR1U5Wm1Gc2MyVSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejFsSUhkcFpIUm9QU0l4TXpNMElpQm9aV2xuYUhROUlqRXpNelFpSUhacFpYZENiM2c5SWpBZ01DQXdNVEl4TUNBd01USXhQQzlwYld4dWMyaHZjeTltYjI5MElIUmxlbUZ2YkZSNWNHVTlaV1J6YkcxbCIsCiAgICAgICJzaXplcyI6ICI5Mg3eDkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSIKICAgIH0KICBDLCAKICAGIMNHDGVNB3JpZXMiOiBbImZpbmFuY2UiXQp9Ig==" as="fetch">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230a0a0a' width='180' height='180' rx='40'/><circle cx='90' cy='90' r='65' fill='%2322c55e' opacity='0.8'/><text x='90' y='102' font-size='56' font-weight='bold' fill='%23000' text-anchor='middle' font-family='Orbitron'>$</text></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230a0a0a' width='192' height='192'/><circle cx='96' cy='96' r='70' fill='%2322c55e' opacity='0.8'/><text x='96' y='108' font-size='60' font-weight='bold' fill='%23000' text-anchor='middle' font-family='Orbitron'>$</text></svg>">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
+  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
   <title>國家安全局情報回覆系統</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="/_sdk/element_sdk.js"></script>
@@ -24,543 +20,140 @@
   <style>
     * { font-family: 'Noto Sans TC', sans-serif; }
     .font-digital { font-family: 'Orbitron', monospace; }
-    
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
-    
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
-      50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); }
-    }
-    
-    @keyframes typing {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-    
-    @keyframes blink {
-      50% { border-color: transparent; }
-    }
-    
-    .scanline {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(to bottom, transparent, rgba(34, 197, 94, 0.1), transparent);
-      animation: scanline 3s linear infinite;
-      pointer-events: none;
-      z-index: 100;
-    }
-    
-    .pulse-border {
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-    
-    .typing-effect {
-      overflow: hidden;
-      white-space: nowrap;
-      border-right: 2px solid #22c55e;
-      animation: typing 2s steps(30) forwards, blink 0.7s step-end infinite;
-    }
-    
-    .glass-dark {
-      background: rgba(20, 20, 20, 0.9);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(34, 197, 94, 0.2);
-    }
-    
-    .btn-classified {
-      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-      border: 1px solid #22c55e;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-classified:hover {
-      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-      color: #000;
-    }
-    
-    .btn-classified:active {
-      transform: scale(0.98);
-    }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-      border: 1px solid #ef4444;
-    }
-    
-    .btn-danger:hover {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      color: #000;
-    }
-    
-    input:focus, select:focus {
-      outline: none;
-      border-color: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-    }
-    
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #0a0a0a; }
-    ::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 3px; }
-    
-    body, html {
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-app-region: no-drag;
-    }
-    
-    input, textarea, select {
-      -webkit-user-select: text;
-    }
-    
-    @supports (padding: max(0px)) {
-      body {
-        padding-left: max(12px, env(safe-area-inset-left));
-        padding-right: max(12px, env(safe-area-inset-right));
-        padding-top: max(12px, env(safe-area-inset-top));
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
-      }
-    }
+    @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); } 50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); } }
+    .scanline { position: fixed; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to bottom, transparent, rgba(34, 197, 94, 0.1), transparent); animation: scanline 3s linear infinite; pointer-events: none; z-index: 100; }
+    .pulse-border { animation: pulse-glow 2s ease-in-out infinite; }
+    .glass-dark { background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
+    .btn-classified { background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); border: 1px solid #22c55e; transition: all 0.3s ease; }
+    .btn-classified:hover { background: #22c55e; color: #000; }
+    input:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
+    body, html { -webkit-user-select: none; -webkit-touch-callout: none; overflow-x: hidden; }
   </style>
-  <style>body { box-sizing: border-box; }</style>
  </head>
  <body class="h-full bg-black text-green-500 overflow-auto">
-  <div class="scanline"></div><!-- 驗證頁面 -->
+  <div class="scanline"></div>
+
   <div id="auth-screen" class="h-full flex flex-col items-center justify-center p-6">
-   <div class="glass-dark rounded-lg p-8 max-w-md w-full text-center"><!-- Logo -->
-    <div class="mb-6"><img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" alt="國家安全局徽章" class="w-24 h-24 mx-auto mb-4 opacity-90" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';">
+   <div class="glass-dark rounded-lg p-8 max-w-md w-full text-center">
+    <div class="mb-6">
+     <img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" alt="NSB" class="w-24 h-24 mx-auto mb-4 opacity-90">
      <h1 class="text-xl font-bold text-green-400 tracking-wider">國家安全局</h1>
      <p class="text-sm text-green-600 mt-1">NATIONAL SECURITY BUREAU</p>
     </div>
     <div class="border-t border-green-900 my-6"></div>
-    <h2 class="text-lg font-medium text-green-300 mb-2">情報回覆系統</h2>
-    <p class="text-xs text-green-700 mb-6">INTELLIGENCE RESPONSE SYSTEM v3.2.1</p>
     <div class="mb-6">
-     <p class="text-xs text-yellow-500 mb-4">⚠ 本系統僅供授權人員使用</p><label class="block text-left text-sm text-green-400 mb-2">請輸入授權碼</label> <input type="password" id="auth-code" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center" placeholder="••••••" maxlength="6">
-    </div><button id="auth-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium tracking-wider"> 身份驗證 </button>
-    <p class="text-xs text-green-800 mt-6">未經授權存取將依法追訴</p>
+     <p class="text-xs text-yellow-500 mb-4">⚠ 授權存取終端已啟動</p>
+     <input type="password" id="auth-code" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center" placeholder="ENTER CODE" maxlength="6">
+    </div>
+    <button id="auth-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium"> 身份驗證 </button>
    </div>
-  </div><!-- 主應用程式 -->
-  <div id="main-app" class="h-full flex flex-col hidden"><!-- 頂部導航 -->
+  </div>
+
+  <div id="main-app" class="h-full flex flex-col hidden">
    <header class="glass-dark p-4 flex items-center justify-between sticky top-0 z-40">
     <div>
-     <h1 id="app-title" class="text-lg font-bold text-green-400">資產管理系統</h1>
+     <h1 class="text-lg font-bold text-green-400">資產管理系統</h1>
      <p class="text-xs text-green-700">ASSET MANAGEMENT</p>
-    </div><button id="logout-btn" class="text-red-500 text-sm hover:text-red-400 px-4 py-2 rounded border border-red-800"> 🔒 登出 </button>
-   </header><!-- 總額顯示 -->
+    </div>
+    <button id="logout-btn" class="text-red-500 text-sm border border-red-800 px-3 py-1 rounded">登出</button>
+   </header>
+
    <div class="p-4">
     <div class="glass-dark rounded-lg p-6 pulse-border">
      <p class="text-xs text-green-600 mb-1">總資產餘額</p>
      <p id="total-balance" class="text-3xl font-digital font-bold text-green-400">NT$ 0</p>
-     <div class="flex gap-4 mt-4 text-sm">
-      <div>
-       <p class="text-green-700">鈔票</p>
-       <p id="cash-total" class="font-digital text-green-400">NT$ 0</p>
-      </div>
-      <div>
-       <p class="text-green-700">零錢</p>
-       <p id="coin-total" class="font-digital text-green-400">NT$ 0</p>
-      </div>
-     </div>
     </div>
-   </div><!-- 標籤切換 -->
-   <div class="px-4 flex gap-2"><button id="tab-wallet" class="flex-1 py-2 rounded bg-green-900 text-green-400 text-sm font-medium"> 錢包一覽 </button> <button id="tab-deposit" class="flex-1 py-2 rounded bg-transparent border border-green-800 text-green-600 text-sm"> 存入資產 </button>
-   </div><!-- 錢包一覽內容 -->
+   </div>
+
+   <div class="px-4 flex gap-2">
+    <button id="tab-wallet" class="flex-1 py-2 rounded bg-green-900 text-green-400 text-sm">錢包一覽</button>
+    <button id="tab-deposit" class="flex-1 py-2 rounded border border-green-800 text-green-600 text-sm">存入資產</button>
+   </div>
+
    <div id="wallet-view" class="flex-1 p-4 overflow-auto">
-    <div id="wallet-list" class="space-y-3"><!-- 動態內容 -->
-    </div>
-    <div id="empty-state" class="text-center py-12 text-green-700 hidden">
-     <p class="text-4xl mb-4">📂</p>
-     <p>尚無資產記錄</p>
-     <p class="text-sm">請點擊「存入資產」新增</p>
-    </div>
-   </div><!-- 存入資產內容 -->
+    <div id="wallet-list" class="space-y-3"></div>
+    <div id="empty-state" class="text-center py-12 text-green-800 hidden">暫無資產記錄</div>
+   </div>
+
    <div id="deposit-view" class="flex-1 p-4 overflow-auto hidden">
-    <div class="glass-dark rounded-lg p-6">
-     <h3 class="text-green-400 font-medium mb-4">新增資產</h3><!-- 類型選擇 -->
-     <div class="mb-4"><label class="block text-sm text-green-600 mb-2">資產類型</label>
-      <div class="flex gap-2"><button id="type-cash" class="flex-1 py-3 rounded bg-green-900 text-green-400 border border-green-700"> 💵 鈔票 </button> <button id="type-coin" class="flex-1 py-3 rounded bg-transparent text-green-600 border border-green-800"> 🪙 零錢 </button>
-      </div>
-     </div><!-- 面額選擇 -->
-     <div class="mb-4"><label class="block text-sm text-green-600 mb-2">面額</label> <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400"> <option value="100">NT$ 100</option> <option value="200">NT$ 200</option> <option value="500">NT$ 500</option> <option value="1000">NT$ 1,000</option> <option value="2000">NT$ 2,000</option> </select>
-     </div><!-- 編號 -->
-     <div class="mb-4"><label class="block text-sm text-green-600 mb-2">編號/序號（選填）</label> <input type="text" id="serial-number" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400" placeholder="輸入編號...">
-     </div><!-- 備註 -->
-     <div class="mb-6"><label class="block text-sm text-green-600 mb-2">備註（選填）</label> <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400" placeholder="輸入備註...">
-     </div><button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium"> 確認存入 </button>
+    <div class="glass-dark rounded-lg p-6 space-y-4">
+      <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400">
+        <option value="1000">NT$ 1,000</option>
+        <option value="500">NT$ 500</option>
+        <option value="100">NT$ 100</option>
+      </select>
+      <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400" placeholder="備註內容">
+      <button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400">確認存入</button>
     </div>
    </div>
   </div>
+
   <script>
-    // 配置
-    const defaultConfig = {
-      app_title: '資產管理系統'
-    };
-
     let walletData = [];
-    let currentType = 'cash';
-    let isAuthenticated = false;
     
-    const cashDenominations = [
-      { value: 100, label: 'NT$ 100' },
-      { value: 200, label: 'NT$ 200' },
-      { value: 500, label: 'NT$ 500' },
-      { value: 1000, label: 'NT$ 1,000' },
-      { value: 2000, label: 'NT$ 2,000' }
-    ];
-    
-    const coinDenominations = [
-      { value: 1, label: 'NT$ 1' },
-      { value: 5, label: 'NT$ 5' },
-      { value: 10, label: 'NT$ 10' },
-      { value: 20, label: 'NT$ 20' },
-      { value: 50, label: 'NT$ 50' }
-    ];
-
-    // 資料處理
-    const dataHandler = {
-      onDataChanged(data) {
-        walletData = data;
-        renderWallet();
-        updateTotals();
-      }
-    };
-
-    // 初始化
-    async function init() {
-      // 初始化 Element SDK
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: async (config) => {
-            document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
-          },
-          mapToCapabilities: (config) => ({
-            recolorables: [],
-            borderables: [],
-            fontEditable: undefined,
-            fontSizeable: undefined
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ['app_title', config.app_title || defaultConfig.app_title]
-          ])
-        });
-      }
-
-      // 初始化 Data SDK
-      if (window.dataSdk) {
-        const result = await window.dataSdk.init(dataHandler);
-        if (!result.isOk) {
-          console.error('Data SDK init failed');
+    // 初始化與驗證
+    function setup() {
+      document.getElementById('auth-btn').onclick = () => {
+        const code = document.getElementById('auth-code').value;
+        if(code.length >= 4) {
+          document.getElementById('auth-screen').classList.add('hidden');
+          document.getElementById('main-app').classList.remove('hidden');
         }
-      }
+      };
+      
+      document.getElementById('logout-btn').onclick = () => location.reload();
+      
+      document.getElementById('tab-wallet').onclick = () => {
+        document.getElementById('wallet-view').classList.remove('hidden');
+        document.getElementById('deposit-view').classList.add('hidden');
+      };
+      
+      document.getElementById('tab-deposit').onclick = () => {
+        document.getElementById('deposit-view').classList.remove('hidden');
+        document.getElementById('wallet-view').classList.add('hidden');
+      };
 
-      setupEventListeners();
-    }
-
-    function setupEventListeners() {
-      // 驗證
-      document.getElementById('auth-btn').addEventListener('click', authenticate);
-      document.getElementById('auth-code').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') authenticate();
-      });
-
-      // 登出
-      document.getElementById('logout-btn').addEventListener('click', logout);
-
-      // 標籤切換
-      document.getElementById('tab-wallet').addEventListener('click', () => switchTab('wallet'));
-      document.getElementById('tab-deposit').addEventListener('click', () => switchTab('deposit'));
-
-      // 類型選擇
-      document.getElementById('type-cash').addEventListener('click', () => selectType('cash'));
-      document.getElementById('type-coin').addEventListener('click', () => selectType('coin'));
-
-      // 存入
-      document.getElementById('deposit-btn').addEventListener('click', deposit);
-    }
-
-    function authenticate() {
-      const code = document.getElementById('auth-code').value;
-      if (code.length >= 4) {
-        isAuthenticated = true;
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-      } else {
-        document.getElementById('auth-code').style.borderColor = '#ef4444';
-        setTimeout(() => {
-          document.getElementById('auth-code').style.borderColor = '';
-        }, 1000);
-      }
-    }
-
-    function logout() {
-      isAuthenticated = false;
-      document.getElementById('auth-code').value = '';
-      document.getElementById('main-app').classList.add('hidden');
-      document.getElementById('auth-screen').classList.remove('hidden');
-    }
-
-    function switchTab(tab) {
-      const walletTab = document.getElementById('tab-wallet');
-      const depositTab = document.getElementById('tab-deposit');
-      const walletView = document.getElementById('wallet-view');
-      const depositView = document.getElementById('deposit-view');
-
-      if (tab === 'wallet') {
-        walletTab.className = 'flex-1 py-2 rounded bg-green-900 text-green-400 text-sm font-medium';
-        depositTab.className = 'flex-1 py-2 rounded bg-transparent border border-green-800 text-green-600 text-sm';
-        walletView.classList.remove('hidden');
-        depositView.classList.add('hidden');
-      } else {
-        depositTab.className = 'flex-1 py-2 rounded bg-green-900 text-green-400 text-sm font-medium';
-        walletTab.className = 'flex-1 py-2 rounded bg-transparent border border-green-800 text-green-600 text-sm';
-        depositView.classList.remove('hidden');
-        walletView.classList.add('hidden');
-      }
-    }
-
-    function selectType(type) {
-      currentType = type;
-      const cashBtn = document.getElementById('type-cash');
-      const coinBtn = document.getElementById('type-coin');
-      const select = document.getElementById('denomination');
-
-      if (type === 'cash') {
-        cashBtn.className = 'flex-1 py-3 rounded bg-green-900 text-green-400 border border-green-700';
-        coinBtn.className = 'flex-1 py-3 rounded bg-transparent text-green-600 border border-green-800';
-        select.innerHTML = cashDenominations.map(d => 
-          `<option value="${d.value}">${d.label}</option>`
-        ).join('');
-      } else {
-        coinBtn.className = 'flex-1 py-3 rounded bg-green-900 text-green-400 border border-green-700';
-        cashBtn.className = 'flex-1 py-3 rounded bg-transparent text-green-600 border border-green-800';
-        select.innerHTML = coinDenominations.map(d => 
-          `<option value="${d.value}">${d.label}</option>`
-        ).join('');
-      }
+      document.getElementById('deposit-btn').onclick = deposit;
     }
 
     async function deposit() {
-      if (walletData.length >= 999) {
-        showMessage('已達到儲存上限（999筆）');
-        return;
-      }
-
-      const btn = document.getElementById('deposit-btn');
-      btn.textContent = '處理中...';
-      btn.disabled = true;
-
-      const denomination = parseInt(document.getElementById('denomination').value);
-      const serialNumber = document.getElementById('serial-number').value.trim();
-      const notes = document.getElementById('notes').value.trim();
-
-      const record = {
-        id: Date.now().toString(),
-        type: currentType,
-        denomination: denomination,
-        serial_number: serialNumber || generateSerial(),
-        deposit_time: new Date().toISOString(),
-        notes: notes
-      };
-
-      if (window.dataSdk) {
-        const result = await window.dataSdk.create(record);
-        if (result.isOk) {
-          document.getElementById('serial-number').value = '';
-          document.getElementById('notes').value = '';
-          showMessage('資產已成功存入');
-          switchTab('wallet');
-        } else {
-          showMessage('存入失敗，請重試');
-        }
-      }
-
-      btn.textContent = '確認存入';
-      btn.disabled = false;
+      const amount = parseInt(document.getElementById('denomination').value);
+      const note = document.getElementById('notes').value;
+      const record = { id: Date.now(), denomination: amount, notes: note, deposit_time: new Date().toISOString() };
+      
+      walletData.push(record);
+      render();
+      document.getElementById('notes').value = '';
+      alert('資產已加密存入');
     }
 
-    function generateSerial() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let serial = '';
-      for (let i = 0; i < 8; i++) {
-        serial += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return serial;
-    }
-
-    window.withdraw = function(record) {
-      const item = document.querySelector(`[data-id="${record.id}"]`);
-      if (item) {
-        const confirmBtn = item.querySelector('.confirm-withdraw');
-        if (confirmBtn) {
-          // 已顯示確認按鈕，執行取出
-          if (window.dataSdk) {
-            const deleteRecord = walletData.find(r => r.id === record.id);
-            if (deleteRecord) {
-              window.dataSdk.delete(deleteRecord).catch(err => {
-                showMessage('取出失敗，請重試');
-              });
-            }
-          }
-        } else {
-          // 顯示確認按鈕
-          const withdrawBtn = item.querySelector('.withdraw-btn');
-          if (withdrawBtn) {
-            withdrawBtn.outerHTML = `
-              <div class="flex gap-2">
-                <button class="confirm-withdraw px-3 py-1 bg-red-900 text-red-400 rounded text-xs" onclick="confirmDelete('${record.id}')">確認取出</button>
-                <button class="px-3 py-1 bg-green-900 text-green-400 rounded text-xs" onclick="cancelWithdraw('${record.id}')">取消</button>
-              </div>
-            `;
-          }
-        }
-      }
-    };
-
-    window.confirmDelete = function(id) {
-      const record = walletData.find(r => r.id === id);
-      if (record && window.dataSdk) {
-        window.dataSdk.delete(record).catch(err => {
-          showMessage('取出失敗，請重試');
-        });
-      }
-    };
-
-    window.cancelWithdraw = function(id) {
-      renderWallet();
-    };
-
-    function renderWallet() {
+    function render() {
       const list = document.getElementById('wallet-list');
-      const empty = document.getElementById('empty-state');
-
-      if (walletData.length === 0) {
-        list.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-
-      empty.classList.add('hidden');
-
-      // 按存入時間排序（最新的在前）
-      const sorted = [...walletData].sort((a, b) => 
-        new Date(b.deposit_time) - new Date(a.deposit_time)
-      );
-
-      list.innerHTML = sorted.map(item => {
-        const date = new Date(item.deposit_time);
-        const dateStr = date.toLocaleDateString('zh-TW');
-        const timeStr = date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
-        const icon = item.type === 'cash' ? '💵' : '🪙';
-        const typeLabel = item.type === 'cash' ? '鈔票' : '零錢';
-
-        return `
-          <div class="glass-dark rounded-lg p-4" data-id="${item.id}">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl">${icon}</span>
-                <div>
-                  <p class="font-digital text-green-400 text-lg">NT$ ${item.denomination.toLocaleString()}</p>
-                  <p class="text-xs text-green-700">${typeLabel}</p>
-                </div>
-              </div>
-              <button class="withdraw-btn btn-danger px-3 py-1 rounded text-red-400 text-sm" onclick="withdraw(walletData.find(r => r.id === '${item.id}'))">
-                取出
-              </button>
-            </div>
-            <div class="mt-3 pt-3 border-t border-green-900 text-xs text-green-600">
-              <div class="flex justify-between mb-1">
-                <span>編號</span>
-                <span class="font-digital text-green-500">${item.serial_number}</span>
-              </div>
-              <div class="flex justify-between mb-1">
-                <span>存入時間</span>
-                <span>${dateStr} ${timeStr}</span>
-              </div>
-              ${item.notes ? `
-              <div class="flex justify-between">
-                <span>備註</span>
-                <span class="text-green-500">${item.notes}</span>
-              </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function updateTotals() {
-      const cashItems = walletData.filter(item => item.type === 'cash');
-      const coinItems = walletData.filter(item => item.type === 'coin');
-
-      const cashTotal = cashItems.reduce((sum, item) => sum + item.denomination, 0);
-      const coinTotal = coinItems.reduce((sum, item) => sum + item.denomination, 0);
-      const total = cashTotal + coinTotal;
-
+      list.innerHTML = walletData.map(item => `
+        <div class="glass-dark rounded-lg p-4">
+          <p class="font-digital text-green-400">NT$ ${item.denomination}</p>
+          <p class="text-xs text-green-700">${item.notes || '無備註'}</p>
+        </div>
+      `).join('');
+      
+      const total = walletData.reduce((sum, i) => sum + i.denomination, 0);
       document.getElementById('total-balance').textContent = `NT$ ${total.toLocaleString()}`;
-      document.getElementById('cash-total').textContent = `NT$ ${cashTotal.toLocaleString()}`;
-      document.getElementById('coin-total').textContent = `NT$ ${coinTotal.toLocaleString()}`;
     }
 
-    function showMessage(msg) {
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-green-900 text-green-400 px-6 py-3 rounded-lg text-sm z-50 max-w-xs text-center';
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    // 註冊 Service Worker (PWA)
+    // PWA Service Worker 註冊 (安裝 App 的關鍵)
     if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'intelligence-v1';
-        const urlsToCache = ['/'];
-
-        self.addEventListener('install', event => {
-          self.skipWaiting();
-        });
-
-        self.addEventListener('activate', event => {
-          event.waitUntil(clients.claim());
-          caches.delete(CACHE_NAME);
-        });
-
-        self.addEventListener('fetch', event => {
-          if (event.request.method !== 'GET') {
-            return;
-          }
-          event.respondWith(
-            caches.open(CACHE_NAME).then(cache => {
-              return fetch(event.request).then(response => {
-                cache.put(event.request, response.clone());
-                return response;
-              }).catch(() => {
-                return caches.match(event.request);
-              });
-            })
-          );
-        });
-      `;
-
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-
-      navigator.serviceWorker.register(swUrl, { scope: '/' })
-        .then(reg => {
-          console.log('✓ Service Worker registered');
-        })
-        .catch(err => {
-          console.log('Service Worker registration error:', err);
-        });
+      window.addEventListener('load', () => {
+        const swCode = `
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob));
+      });
     }
 
-    init();
+    setup();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d1e303390a83323',t:'MTc3MTc2MDIxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ </body>
 </html>
