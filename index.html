@@ -1,10 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ezert MDM</title>
-    
+
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#000000">
+
+    <style>
+        /* 基礎頁面設定 (模擬 MDM 背景) */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #00FF00; /* 圖片中的螢光綠背景 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 滿版遮罩容器 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.2); /* 輕微暗化背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        /* 錯誤訊息主方框 */
+        .mdm-dialog {
+            background-color: rgba(45, 45, 45, 0.9); /* 深灰色半透明 */
+            backdrop-filter: blur(12px);             /* 毛玻璃效果 */
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            width: 85%;
+            max-width: 340px;
+            padding: 22px;
+            border-radius: 28px;                     /* 圓潤的現代感 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        /* 文字排版 */
+        .exception-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            word-break: break-all;      /* 強制長字元換行，避免撐開框框 */
+            letter-spacing: 0.3px;
+        }
+
+        /* 特定代碼區塊 (SHA1 等) 使用等寬字體更專業 */
+        .code-font {
+            font-family: "SF Mono", "Consolas", "Monaco", monospace;
+            opacity: 0.9;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* 入場動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
 </head>
+<body>
+
+    <div class="overlay">
+        <div class="mdm-dialog">
+            <p class="exception-text">
+                Exception3-SSLPeerUnverifiedException: Hostname <span class="code-font">mdmservice.ncsist.org.tw</span> not verified:
+                <span class="code-font" style="margin-top: 10px;">
+                    certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=<br>
+                    DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW<br>
+                    subjectAltNames: [*.ncsist.org.tw, ncsist.org.tw]
+                </span>
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
