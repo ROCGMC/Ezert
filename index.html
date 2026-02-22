@@ -1,26 +1,10 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ezert MDM</title>
+    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#000000">
 </head>
-<body>
-    <div style="text-align:center; padding-top:100px; font-family:sans-serif;">
-        <img src="icon.png" width="100" style="border-radius:20%;">
-        <h1>Ezert MDM</h1>
-        <p id="stat">偵測中...</p>
-    </div>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => document.getElementById('stat').innerText = "✅ PWA 已啟動")
-                .catch(err => document.getElementById('stat').innerText = "❌ 錯誤: " + err);
-        }
-    </script>
-</body>
-</html>
