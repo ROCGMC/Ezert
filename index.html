@@ -29,7 +29,6 @@
         .input-error { border-color: #ef4444 !important; animation: shake 0.2s ease-in-out 0s 2; color: #ef4444 !important; }
         .scrollable-content { overflow-y: auto; -webkit-overflow-scrolling: touch; }
         
-        /* 聊天氣泡樣式 */
         .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; margin-bottom: 8px; }
         .chat-left { background: #1a1a1a; border: 1px solid #22c55e; align-self: flex-start; }
     </style>
@@ -51,40 +50,37 @@
     <div id="chat-app" class="h-full flex flex-col hidden overflow-hidden">
         <header class="glass-dark p-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <div>
-                    <h1 class="text-sm font-bold text-green-400">加密頻道: ALPHA-7</h1>
-                    <p class="text-[10px] text-green-700">NODE: TAIPEI_CENTRAL</p>
-                </div>
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <h1 class="text-sm font-bold text-green-400 tracking-tighter">SECURE CHANNEL ALPHA-7</h1>
             </div>
+            <button onclick="location.reload()" class="text-[10px] text-green-800 border border-green-900 px-2 py-1 rounded">斷開連接</button>
         </header>
         
         <div id="chat-history" class="flex-1 p-4 flex flex-col scrollable-content">
-            <div class="chat-bubble chat-left text-green-800 text-[10px]">系統提示: 頻道已建立 256-bit 加密</div>
-            <div class="chat-bubble chat-left">情報中心: 各單位回報當前區域狀況。</div>
-            <div class="chat-bubble chat-left">第3分隊: 北部防線一切正常，待命中。</div>
-            <div class="chat-bubble chat-left">中心: 收到，維持警戒。</div>
+            <div class="chat-bubble chat-left text-green-900 text-[10px]">系統: 頻道加密已啟動 (AES-256)</div>
+            <div class="chat-bubble chat-left">情報中心: 已確認你的位置，請維持通訊。</div>
+            <div class="chat-bubble chat-left">情報中心: 今日EBO分配狀況是否異常？</div>
         </div>
 
         <div class="p-3 glass-dark flex gap-2">
-            <input type="text" id="chat-input" class="flex-1 bg-black border border-green-900 rounded px-3 py-2 text-sm text-green-400 focus:outline-none" placeholder="請輸入訊息...">
+            <input type="text" id="chat-input" class="flex-1 bg-black border border-green-900 rounded px-3 py-2 text-sm text-green-400 focus:outline-none" placeholder="輸入訊息...">
             <button id="chat-send" class="px-4 py-2 bg-green-900 text-green-400 rounded text-sm">傳送</button>
         </div>
     </div>
 
-    <div id="main-app" class="h-full flex flex-col hidden overflow-hidden">
+    <div id="main-app" class="h-full flex flex-col hidden overflow-hidden bg-[#050505]">
         <header class="glass-dark p-4 flex items-center justify-between shrink-0 border-b border-green-500">
             <div>
                 <h1 class="text-lg font-bold text-green-400 italic">資產數據中心</h1>
-                <p class="text-[10px] text-green-700 uppercase tracking-widest">Confidential Data</p>
+                <p class="text-[10px] text-green-700 uppercase">Classified Access Only</p>
             </div>
-            <button onclick="location.reload()" class="text-red-500 text-xs border border-red-900 px-2 py-1 rounded">鎖定系統</button>
+            <button id="back-to-chat" class="text-green-800 text-[10px] border border-green-900 px-2 py-1 rounded">返回通訊</button>
         </header>
 
         <div class="scrollable-content flex-1">
             <div class="p-4">
-                <div class="glass-dark rounded-lg p-6 border-2 border-green-500 text-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                    <p class="text-xs text-green-600 mb-1 tracking-widest">總計加密餘額</p>
+                <div class="glass-dark rounded-lg p-6 border-2 border-green-500 text-center shadow-[0_0_15px_rgba(34,197,94,0.2)]">
+                    <p class="text-[10px] text-green-600 mb-1 uppercase tracking-[0.2em]">Total Assets Balance</p>
                     <p id="total-balance" class="text-3xl font-digital font-bold text-green-400">NT$ 0</p>
                 </div>
             </div>
@@ -92,14 +88,14 @@
                 <button id="tab-wallet" class="flex-1 py-2 rounded bg-green-900 text-green-400 text-xs">資產庫存</button>
                 <button id="tab-deposit" class="flex-1 py-2 rounded border border-green-800 text-green-600 text-xs">數據錄入</button>
             </div>
-            <div id="wallet-view" class="p-4"><div id="wallet-list" class="space-y-3"></div><div id="empty-state" class="text-center py-12 text-green-900">NO DATA</div></div>
+            <div id="wallet-view" class="p-4"><div id="wallet-list" class="space-y-3"></div><div id="empty-state" class="text-center py-12 text-green-900">NO ENCRYPTED DATA</div></div>
             <div id="deposit-view" class="p-4 hidden">
                 <div class="glass-dark rounded-lg p-6 space-y-4">
-                    <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital">
+                    <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital text-lg">
                         <option value="1000">1,000</option><option value="500">500</option><option value="100">100</option>
                     </select>
-                    <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-xs text-green-400" placeholder="來源說明 (選填)">
-                    <button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400 font-bold">執行存檔</button>
+                    <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-xs text-green-400" placeholder="來源備註 (選填)">
+                    <button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400 font-bold">執行存檔紀錄</button>
                 </div>
             </div>
         </div>
@@ -108,9 +104,11 @@
     <div id="emergency-screen" class="h-full w-full flex flex-col items-center justify-center p-6 bg-red-950 fixed inset-0 z-50 hidden">
         <div class="text-center space-y-6">
             <div class="text-6xl mb-4 animate-bounce">⚠️</div>
-            <h1 class="text-2xl font-bold text-white tracking-widest">應急應變程序</h1>
-            <div class="p-4 border-2 border-red-500 rounded bg-black text-red-500 font-mono text-xs text-left">
-                [警告] 連續非法嘗試驗證<br>[追蹤] IP 位置: <span id="client-ip">FETCHING...</span><br>[處理] 系統永久鎖定
+            <h1 class="text-2xl font-bold text-white tracking-widest uppercase">Emergency Lock</h1>
+            <div class="p-4 border-2 border-red-500 rounded bg-black text-red-500 font-mono text-xs text-left leading-relaxed">
+                [SYSTEM] 多次嘗試非法授權<br>
+                [REPORT] IP: <span id="client-ip" class="font-bold underline">FETCHING...</span><br>
+                [ACTION] 硬體存取功能已暫停
             </div>
         </div>
     </div>
@@ -120,7 +118,6 @@
         let errorCount = 0;
         const MAX_ERRORS = 3;
 
-        // 禁止下拉重新整理
         document.addEventListener('touchmove', e => { if (!e.target.closest('.scrollable-content')) e.preventDefault(); }, { passive: false });
 
         async function fetchIP() {
@@ -128,7 +125,7 @@
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
                 document.getElementById('client-ip').textContent = data.ip;
-            } catch (e) { document.getElementById('client-ip').textContent = 'ERR:TRACKING_FAIL'; }
+            } catch (e) { document.getElementById('client-ip').textContent = 'UNABLE_TO_TRACK'; }
         }
 
         function init() {
@@ -137,7 +134,7 @@
             const chatInput = document.getElementById('chat-input');
             const chatSend = document.getElementById('chat-send');
 
-            // 登入驗證
+            // 唯一的驗證邏輯
             authBtn.onclick = () => {
                 const code = authInput.value;
                 if(code === '981103' || code === '990420') {
@@ -160,15 +157,15 @@
                 }
             };
 
-            // 聊天介面功能與隱藏命令
+            // 聊天與隱藏命令
             const handleChat = () => {
                 const msg = chatInput.value.trim();
                 if(msg === '/a') {
                     document.getElementById('chat-app').classList.add('hidden');
                     document.getElementById('main-app').classList.remove('hidden');
+                    chatInput.value = ''; // 清空指令
                     render();
                 } else if(msg !== "") {
-                    // 模擬通訊
                     const hist = document.getElementById('chat-history');
                     hist.innerHTML += `<div class="chat-bubble chat-left text-green-300">我: ${msg}</div>`;
                     chatInput.value = '';
@@ -178,8 +175,12 @@
 
             chatSend.onclick = handleChat;
             chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChat(); });
+            
+            document.getElementById('back-to-chat').onclick = () => {
+                document.getElementById('main-app').classList.add('hidden');
+                document.getElementById('chat-app').classList.remove('hidden');
+            };
 
-            // 資產管理介面邏輯
             document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
             document.getElementById('tab-deposit').onclick = () => switchTab('deposit');
             document.getElementById('deposit-btn').onclick = deposit;
@@ -211,9 +212,10 @@
                     <div class="glass-dark rounded-lg p-3 flex justify-between items-center border-l-2 border-green-500">
                         <div>
                             <p class="font-digital text-green-400 text-lg">NT$ ${item.denomination}</p>
-                            <p class="text-[10px] text-green-800">${item.time} | ${item.notes || 'INTERNAL'}</p>
+                            <p class="text-[9px] text-green-800">${item.time}</p>
+                            <p class="text-xs text-green-600">${item.notes || 'INTERNAL_RESERVE'}</p>
                         </div>
-                        <button onclick="removeItem(${item.id})" class="text-red-900 text-xs px-2 py-1">刪除</button>
+                        <button onclick="removeItem(${item.id})" class="text-red-900 text-[10px] px-2">移除</button>
                     </div>
                 `).join('');
             } else { empty.classList.remove('hidden'); list.innerHTML = ''; }
@@ -222,7 +224,7 @@
         }
 
         window.removeItem = (id) => {
-            if(confirm('確認抹除數據？')) {
+            if(confirm('確認抹除此筆加密數據？')) {
                 walletData = walletData.filter(i => i.id !== id);
                 localStorage.setItem('nsb_assets', JSON.stringify(walletData));
                 render();
