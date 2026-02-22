@@ -15,8 +15,7 @@
     <style>
         * { font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
         .font-digital { font-family: 'Orbitron', monospace; }
-        
-        /* 鎖定下拉 */
+
         html, body { 
             overscroll-behavior-y: none; 
             overflow: hidden; 
@@ -28,14 +27,18 @@
         .glass-dark { background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
         .btn-green { background: #15803d; color: white; transition: all 0.2s; }
         .btn-green:active { transform: scale(0.95); background: #166534; }
-        
+
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         .input-error { border-color: #ef4444 !important; animation: shake 0.2s ease-in-out 2; }
-        
+
         .scrollable { overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 15px; margin-bottom: 12px; line-height: 1.4; }
         .chat-receive { background: #262626; color: #e5e5e5; align-self: flex-start; border-bottom-left-radius: 4px; }
         .chat-send { background: #15803d; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        
+        /* 收支標籤樣式 */
+        .type-income { color: #4ade80; border: 1px solid #4ade80; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        .type-expense { color: #f87171; border: 1px solid #f87171; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
     </style>
 </head>
 <body class="flex flex-col text-gray-200">
@@ -43,13 +46,13 @@
     <div id="auth-screen" class="absolute inset-0 z-[100] flex flex-col items-center justify-center p-8 bg-black">
         <div class="w-full max-w-xs text-center">
             <img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" class="w-20 h-20 mx-auto mb-6 opacity-80">
-            <h1 class="text-green-500 font-bold tracking-widest mb-8">中華民國國家安全局-情報通報軟體</h1>
+            <h1 class="text-green-500 font-bold tracking-widest mb-8 text-sm">國家安全局-行動通訊終端</h1>
             <div class="space-y-4">
                 <input type="password" id="auth-code" inputmode="numeric" maxlength="6" 
                     class="w-full bg-neutral-900 border border-neutral-800 rounded-xl py-4 text-center text-2xl font-digital tracking-[0.5em] text-green-500 focus:outline-none focus:border-green-600" 
-                    placeholder="請輸入身份編碼">
-                <p id="error-hint" class="text-red-500 text-xs h-4 opacity-0 transition-opacity">驗證失敗，剩餘 <span id="retry-count">3</span> 次嘗試</p>
-                <button id="auth-btn" class="w-full btn-green py-4 rounded-xl font-bold text-lg">登入系統</button>
+                    placeholder="身分識別碼">
+                <p id="error-hint" class="text-red-500 text-xs h-4 opacity-0 transition-opacity">身分錯誤，剩餘 <span id="retry-count">3</span> 次嘗試</p>
+                <button id="auth-btn" class="w-full btn-green py-4 rounded-xl font-bold text-lg">進入系統</button>
             </div>
         </div>
     </div>
@@ -58,23 +61,17 @@
         <header class="p-4 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/50">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-neutral-800 rounded-full flex items-center justify-center text-green-500 font-bold">NS</div>
-                <div>
-                    <p class="font-bold text-sm">通訊頻道7359</p>
-                    <p class="text-[10px] text-green-600">● 在線 (加密中)</p>
-                </div>
+                <div><p class="font-bold text-sm">通訊頻道 7359</p><p class="text-[10px] text-green-600">● 終端加密在線</p></div>
             </div>
             <button onclick="location.reload()" class="text-xs text-neutral-500">登出</button>
         </header>
-
         <div id="chat-content" class="flex-1 p-4 flex flex-col scrollable">
-            <div class="text-[11px] text-neutral-600 text-center my-4 uppercase tracking-widest font-digital">上午 6:08</div>
+            <div class="text-[11px] text-neutral-600 text-center my-4 tracking-widest font-digital">CONNECT_STABLE_09:41</div>
             <div class="chat-bubble chat-receive">系統訊息：身分驗證成功，歡迎回到指揮中心。</div>
-            <div class="chat-bubble chat-receive">指揮中心：請儘快確認本週調動分配表。</div>
-            <div class="chat-bubble chat-receive">資安組：系統維護已完成，若有通訊延遲請回報。</div>
+            <div class="chat-bubble chat-receive">行動組：目標已確認，請示下一步指令。</div>
         </div>
-
         <div class="p-4 bg-neutral-900 flex gap-2">
-            <input type="text" id="chat-input" class="flex-1 bg-black border border-neutral-800 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-green-800" placeholder="發送訊息...">
+            <input type="text" id="chat-input" class="flex-1 bg-black border border-neutral-800 rounded-full px-4 py-2 text-sm focus:outline-none" placeholder="輸入訊息...">
             <button id="chat-send" class="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
             </button>
@@ -88,82 +85,82 @@
         </header>
 
         <div class="flex-1 scrollable p-4">
-            <div class="glass-dark rounded-2xl p-8 text-center mb-6">
-                <p class="text-[10px] text-green-800 uppercase tracking-widest mb-2">Current Total Assets</p>
-                <p id="total-balance" class="text-4xl font-digital font-bold text-green-400">NT$ 0</p>
+            <div class="glass-dark rounded-2xl p-6 text-center mb-4">
+                <p class="text-[10px] text-green-800 uppercase tracking-widest mb-1">Current Cash Total</p>
+                <p id="total-balance" class="text-3xl font-digital font-bold text-green-400">NT$ 0</p>
             </div>
 
-            <div class="flex gap-2 mb-6">
-                <button id="tab-wallet" class="flex-1 py-3 rounded-lg bg-green-900/30 border border-green-800 text-green-400 text-sm font-bold">資產清單</button>
-                <button id="tab-deposit" class="flex-1 py-3 rounded-lg border border-neutral-800 text-neutral-500 text-sm">存入數據</button>
+            <div class="flex gap-1 mb-4 bg-neutral-900 p-1 rounded-xl">
+                <button id="tab-wallet" class="flex-1 py-2 rounded-lg text-xs transition-all">資產清單</button>
+                <button id="tab-log" class="flex-1 py-2 rounded-lg text-xs transition-all">收支紀錄</button>
+                <button id="tab-deposit" class="flex-1 py-2 rounded-lg text-xs transition-all">數據錄入</button>
             </div>
 
             <div id="wallet-view">
                 <div id="wallet-list" class="space-y-3"></div>
-                <div id="empty-state" class="text-center py-20 text-neutral-800">EMPTY_DATA_ENTRY</div>
+                <div id="empty-state" class="text-center py-10 text-neutral-800">NO_DATA_ENTRY</div>
             </div>
 
-            <div id="deposit-view" class="hidden space-y-4">
+            <div id="log-view" class="hidden space-y-4">
+                <div class="glass-dark rounded-xl p-4 space-y-3">
+                    <div class="flex gap-2">
+                        <button id="btn-type-income" class="flex-1 py-2 rounded border border-green-500 text-green-500 text-xs bg-green-900/20">收入</button>
+                        <button id="btn-type-expense" class="flex-1 py-2 rounded border border-neutral-700 text-neutral-500 text-xs">支出</button>
+                    </div>
+                    <input type="number" id="log-amount" class="w-full bg-black border border-neutral-800 rounded p-3 text-green-400 font-digital" placeholder="輸入金額">
+                    <input type="text" id="log-reason" class="w-full bg-black border border-neutral-800 rounded p-3 text-sm" placeholder="收支原因 (例如: 買午餐)">
+                    <button id="log-save-btn" class="w-full btn-green py-3 rounded-lg font-bold text-sm">存檔紀錄 (不改動現金總額)</button>
+                </div>
+                <div id="log-list" class="space-y-2 border-t border-neutral-800 pt-4"></div>
+            </div>
+
+            <div id="deposit-view" class="hidden">
                 <div class="glass-dark rounded-xl p-6 space-y-4">
+                    <p class="text-[10px] text-neutral-500">※ 此處調整將直接改動「資產清單」數據</p>
                     <select id="denomination" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-green-500 font-digital text-xl">
-                        <option value="1000">1,000</option>
-                        <option value="500">500</option>
-                        <option value="100">100</option>
+                        <option value="1000">1,000</option><option value="500">500</option><option value="100">100</option>
                     </select>
-                    <input type="text" id="notes" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-sm text-green-500" placeholder="備註...">
-                    <button id="deposit-btn" class="w-full btn-green py-4 rounded-xl font-bold">執行存入程序</button>
+                    <input type="text" id="notes" class="w-full bg-black border border-neutral-800 rounded-lg p-4 text-sm text-green-500" placeholder="來源備註...">
+                    <button id="deposit-btn" class="w-full btn-green py-4 rounded-xl font-bold">執行資產存入</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="emergency-screen" class="hidden fixed inset-0 z-[200] bg-red-950 flex flex-col items-center justify-center p-8 text-center">
+    <div id="emergency-screen" class="hidden fixed inset-0 z-[200] bg-red-950 flex flex-col items-center justify-center p-8 text-center text-red-500 font-mono">
         <div class="text-7xl mb-6">⚠️</div>
-        <h1 class="text-2xl font-bold text-white mb-2">SECURITY BREACH</h1>
-        <p class="text-red-500 font-mono text-xs mb-8">多次非法嘗試，通訊已切斷</p>
-        <div class="bg-black border border-red-500 p-4 rounded text-red-500 font-mono text-[10px] text-left w-full space-y-1">
-            <p>> TRACING_SOURCE_IP...</p>
-            <p>> IP_ADDR: <span id="client-ip" class="font-bold underline">FETCHING...</span></p>
-            <p>> STATUS: UPLOADING_TO_SERVER</p>
-        </div>
+        <h1 class="text-2xl font-bold text-white mb-2 tracking-tighter">TERMINAL_LOCKED</h1>
+        <p class="text-xs mb-8 underline">偵測到多次異常登入，IP 已上傳</p>
+        <div id="client-ip" class="text-lg font-bold">FETCHING_IP...</div>
     </div>
 
     <script>
         let walletData = JSON.parse(localStorage.getItem('nsb_assets') || '[]');
+        let financialLogs = JSON.parse(localStorage.getItem('nsb_logs') || '[]');
+        let currentLogType = '收入';
         let errorCount = 0;
 
-        // 禁止下拉重新整理
         document.addEventListener('touchmove', e => { if (!e.target.closest('.scrollable')) e.preventDefault(); }, { passive: false });
 
         async function fetchIP() {
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
-                document.getElementById('client-ip').textContent = data.ip;
-            } catch (e) { document.getElementById('client-ip').textContent = '124.218.' + Math.floor(Math.random()*255) + '.XX'; }
+                document.getElementById('client-ip').textContent = "SOURCE_IP: " + data.ip;
+            } catch (e) { document.getElementById('client-ip').textContent = "SOURCE_IP: 103.24.XX.XX"; }
         }
 
         function init() {
-            const authBtn = document.getElementById('auth-btn');
-            const authInput = document.getElementById('auth-code');
-            const chatInput = document.getElementById('chat-input');
-            const chatSend = document.getElementById('chat-send');
-
-            // 唯一的密碼頁驗證
-            authBtn.onclick = () => {
-                const val = authInput.value;
+            // 登入邏輯
+            document.getElementById('auth-btn').onclick = () => {
+                const val = document.getElementById('auth-code').value;
                 if(val === '981103' || val === '990420') {
                     document.getElementById('auth-screen').classList.add('hidden');
                     document.getElementById('chat-app').classList.remove('hidden');
                 } else {
                     errorCount++;
-                    const hint = document.getElementById('error-hint');
-                    hint.style.opacity = '1';
+                    document.getElementById('error-hint').style.opacity = '1';
                     document.getElementById('retry-count').textContent = 3 - errorCount;
-                    authInput.classList.add('input-error');
-                    setTimeout(() => authInput.classList.remove('input-error'), 400);
-                    authInput.value = '';
-                    
                     if(errorCount >= 3) {
                         document.getElementById('auth-screen').classList.add('hidden');
                         document.getElementById('emergency-screen').classList.remove('hidden');
@@ -172,41 +169,61 @@
                 }
             };
 
-            // 通訊介面與隱藏指令 /a
+            // /a 指令切換
             const handleChat = () => {
-                const msg = chatInput.value.trim();
-                if(msg === '/a') {
+                const inp = document.getElementById('chat-input');
+                if(inp.value.trim() === '/a') {
                     document.getElementById('chat-app').classList.add('hidden');
                     document.getElementById('main-app').classList.remove('hidden');
-                    chatInput.value = '';
-                    render();
-                } else if(msg !== "") {
-                    const content = document.getElementById('chat-content');
-                    content.innerHTML += `<div class="chat-bubble chat-send">${msg}</div>`;
-                    chatInput.value = '';
-                    content.scrollTop = content.scrollHeight;
+                    renderAll();
+                    switchTab('wallet');
+                } else if(inp.value !== "") {
+                    document.getElementById('chat-content').innerHTML += `<div class="chat-bubble chat-send">${inp.value}</div>`;
+                    inp.value = '';
                 }
             };
+            document.getElementById('chat-send').onclick = handleChat;
 
-            chatSend.onclick = handleChat;
-            chatInput.addEventListener('keypress', e => { if(e.key === 'Enter') handleChat(); });
+            // 收支類型切換
+            document.getElementById('btn-type-income').onclick = () => setLogType('收入');
+            document.getElementById('btn-type-expense').onclick = () => setLogType('支出');
+            document.getElementById('log-save-btn').onclick = saveLog;
 
+            // 基礎資產功能
+            document.getElementById('deposit-btn').onclick = deposit;
+            document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
+            document.getElementById('tab-log').onclick = () => switchTab('log');
+            document.getElementById('tab-deposit').onclick = () => switchTab('deposit');
             document.getElementById('close-asset').onclick = () => {
                 document.getElementById('main-app').classList.add('hidden');
                 document.getElementById('chat-app').classList.remove('hidden');
             };
-
-            // 資產分頁切換
-            document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
-            document.getElementById('tab-deposit').onclick = () => switchTab('deposit');
-            document.getElementById('deposit-btn').onclick = deposit;
         }
 
-        function switchTab(tab) {
-            document.getElementById('wallet-view').classList.toggle('hidden', tab !== 'wallet');
-            document.getElementById('deposit-view').classList.toggle('hidden', tab !== 'deposit');
-            document.getElementById('tab-wallet').className = tab === 'wallet' ? 'flex-1 py-3 rounded-lg bg-green-900/30 border border-green-800 text-green-400 text-sm font-bold' : 'flex-1 py-3 rounded-lg border border-neutral-800 text-neutral-500 text-sm';
-            document.getElementById('tab-deposit').className = tab === 'deposit' ? 'flex-1 py-3 rounded-lg bg-green-900/30 border border-green-800 text-green-400 text-sm font-bold' : 'flex-1 py-3 rounded-lg border border-neutral-800 text-neutral-500 text-sm';
+        function setLogType(type) {
+            currentLogType = type;
+            const isInc = type === '收入';
+            document.getElementById('btn-type-income').className = isInc ? 'flex-1 py-2 rounded border border-green-500 text-green-500 text-xs bg-green-900/20' : 'flex-1 py-2 rounded border border-neutral-700 text-neutral-500 text-xs';
+            document.getElementById('btn-type-expense').className = !isInc ? 'flex-1 py-2 rounded border border-red-500 text-red-500 text-xs bg-red-900/20' : 'flex-1 py-2 rounded border border-neutral-700 text-neutral-500 text-xs';
+        }
+
+        function saveLog() {
+            const amount = document.getElementById('log-amount').value;
+            const reason = document.getElementById('log-reason').value;
+            if(!amount || !reason) return alert('金額與原因不可為空');
+            
+            financialLogs.push({
+                id: Date.now(),
+                type: currentLogType,
+                amount: amount,
+                reason: reason,
+                time: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem('nsb_logs', JSON.stringify(financialLogs));
+            document.getElementById('log-amount').value = '';
+            document.getElementById('log-reason').value = '';
+            renderAll();
+            alert('收支紀錄已存檔，請記得手動調整現金資產。');
         }
 
         function deposit() {
@@ -214,37 +231,54 @@
             const note = document.getElementById('notes').value;
             walletData.push({ id: Date.now(), denomination: amount, notes: note, time: new Date().toLocaleTimeString() });
             localStorage.setItem('nsb_assets', JSON.stringify(walletData));
-            render();
             document.getElementById('notes').value = '';
+            renderAll();
             switchTab('wallet');
         }
 
-        function render() {
+        function switchTab(tab) {
+            document.getElementById('wallet-view').classList.toggle('hidden', tab !== 'wallet');
+            document.getElementById('log-view').classList.toggle('hidden', tab !== 'log');
+            document.getElementById('deposit-view').classList.toggle('hidden', tab !== 'deposit');
+            
+            ['tab-wallet', 'tab-log', 'tab-deposit'].forEach(id => {
+                const isActive = id === `tab-${tab}`;
+                document.getElementById(id).className = isActive ? 'flex-1 py-2 rounded-lg text-xs bg-green-800 text-white font-bold' : 'flex-1 py-2 rounded-lg text-xs text-neutral-500';
+            });
+        }
+
+        function renderAll() {
+            // 渲染資產清單
             const list = document.getElementById('wallet-list');
-            const empty = document.getElementById('empty-state');
             if(walletData.length > 0) {
-                empty.classList.add('hidden');
-                list.innerHTML = walletData.slice().reverse().map(item => `
-                    <div class="bg-neutral-900 rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <p class="font-digital text-green-500 text-lg">NT$ ${item.denomination}</p>
-                            <p class="text-[10px] text-neutral-600">${item.time} | ${item.notes || 'No Remarks'}</p>
-                        </div>
-                        <button onclick="removeItem(${item.id})" class="text-red-900 text-xs">移除</button>
+                document.getElementById('empty-state').classList.add('hidden');
+                list.innerHTML = walletData.slice().reverse().map(i => `
+                    <div class="bg-neutral-900 rounded-xl p-4 flex justify-between items-center border-l-2 border-green-700">
+                        <div><p class="font-digital text-green-500">NT$ ${i.denomination}</p><p class="text-[9px] text-neutral-600">${i.notes || '無備註'}</p></div>
+                        <button onclick="removeAsset(${i.id})" class="text-red-900 text-xs">移除</button>
                     </div>
                 `).join('');
-            } else { empty.classList.remove('hidden'); list.innerHTML = ''; }
+            } else { document.getElementById('empty-state').classList.remove('hidden'); list.innerHTML = ''; }
+
+            // 渲染收支紀錄
+            document.getElementById('log-list').innerHTML = financialLogs.slice().reverse().map(l => `
+                <div class="bg-neutral-900/40 p-3 rounded flex justify-between items-center border-b border-neutral-800">
+                    <div>
+                        <span class="${l.type === '收入' ? 'type-income' : 'type-expense'}">${l.type}</span>
+                        <span class="text-sm ml-2 font-bold">${l.reason}</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-digital ${l.type === '收入' ? 'text-green-400' : 'text-red-400'}">${l.type === '收入' ? '+' : '-'} ${l.amount}</p>
+                        <p class="text-[8px] text-neutral-600">${l.time}</p>
+                    </div>
+                </div>
+            `).join('');
+
             const total = walletData.reduce((sum, i) => sum + i.denomination, 0);
             document.getElementById('total-balance').textContent = `NT$ ${total.toLocaleString()}`;
         }
 
-        window.removeItem = (id) => {
-            if(confirm('確認從資料庫抹除？')) {
-                walletData = walletData.filter(i => i.id !== id);
-                localStorage.setItem('nsb_assets', JSON.stringify(walletData));
-                render();
-            }
-        };
+        window.removeAsset = (id) => { if(confirm('抹除資產數據？')) { walletData = walletData.filter(i => i.id !== id); localStorage.setItem('nsb_assets', JSON.stringify(walletData)); renderAll(); } };
 
         init();
     </script>
