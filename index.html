@@ -7,26 +7,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="資產管理">
     <meta name="theme-color" content="#0a0a0a">
-    
+
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
-    
+
     <title>國家安全局情報回覆系統</title>
-    
+
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <style>
         * { font-family: 'Noto Sans TC', sans-serif; }
         .font-digital { font-family: 'Orbitron', monospace; }
         @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); } 50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         .scanline { position: fixed; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to bottom, transparent, rgba(34, 197, 94, 0.1), transparent); animation: scanline 3s linear infinite; pointer-events: none; z-index: 100; }
         .pulse-border { animation: pulse-glow 2s ease-in-out infinite; }
         .glass-dark { background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
         .btn-classified { background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); border: 1px solid #22c55e; transition: all 0.3s ease; }
         .btn-classified:hover { background: #22c55e; color: #000; }
+        .input-error { border-color: #ef4444 !important; animation: shake 0.2s ease-in-out 0s 2; color: #ef4444 !important; }
         body, html { -webkit-user-select: none; -webkit-touch-callout: none; background-color: #000; color: #22c55e; height: 100%; margin: 0; }
     </style>
 </head>
@@ -37,15 +39,29 @@
         <div class="glass-dark rounded-lg p-8 max-w-md w-full text-center">
             <div class="mb-6">
                 <img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" alt="NSB" class="w-24 h-24 mx-auto mb-4 opacity-90">
-                <h1 class="text-xl font-bold text-green-400 tracking-wider">中華民國國家安全局 </h1>
+                <h1 class="text-xl font-bold text-green-400 tracking-wider">中華民國國家安全局</h1>
                 <p class="text-sm text-green-600 mt-1">情報回傳專用軟體</p>
             </div>
             <div class="border-t border-green-900 my-6"></div>
             <div class="mb-6">
-                <p class="text-xs text-yellow-500 mb-4">注意，未經授權存儲此軟體將依《國家安全法》處置</p>
-                <input type="password" id="auth-code" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center" placeholder="輸入驗證碼" maxlength="6">
+                <p id="auth-msg" class="text-xs text-yellow-500 mb-4">注意，未經授權存儲此軟體將依《國家安全法》處置</p>
+                <input type="password" id="auth-code" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center focus:outline-none" placeholder="輸入驗證碼" maxlength="6">
+                <p id="error-hint" class="text-red-500 text-[10px] mt-2 hidden">驗證失敗，剩餘重試次數：<span id="retry-count">3</span></p>
             </div>
-            <button id="auth-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium"> 執行身份驗證 </button>
+            <button id="auth-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium">執行身份驗證</button>
+        </div>
+    </div>
+
+    <div id="emergency-screen" class="h-full flex flex-col items-center justify-center p-6 bg-red-950 hidden">
+        <div class="text-center space-y-6">
+            <div class="text-6xl mb-4">⚠️</div>
+            <h1 class="text-3xl font-bold text-white tracking-tighter">進入應急模式</h1>
+            <div class="p-4 border-2 border-red-500 rounded bg-black text-red-500 font-mono text-sm">
+                偵測到連續非法入侵嘗試<br>
+                系統已鎖定，座標定位中...<br>
+                相關資訊已上傳至國家安全局中心
+            </div>
+            <p class="text-red-400 text-xs animate-pulse">TERMINAL LOCKED BY PROTOCOL 9</p>
         </div>
     </div>
 
@@ -93,30 +109,52 @@
 
     <script>
         let walletData = JSON.parse(localStorage.getItem('nsb_assets') || '[]');
-        
-        // 介面切換與初始化
+        let errorCount = 0;
+        const MAX_ERRORS = 3;
+
         function init() {
-            document.getElementById('auth-btn').onclick = () => {
-                const code = document.getElementById('auth-code').value;
-                if(code.length >= 4) {
+            const authBtn = document.getElementById('auth-btn');
+            const authInput = document.getElementById('auth-code');
+            const errorHint = document.getElementById('error-hint');
+            const retrySpan = document.getElementById('retry-count');
+
+            authBtn.onclick = () => {
+                const code = authInput.value;
+                
+                // 驗證碼檢查
+                if(code === '981103' || code === '990420') {
                     document.getElementById('auth-screen').classList.add('hidden');
                     document.getElementById('main-app').classList.remove('hidden');
+                    errorCount = 0; // 成功則重置次數
                     render();
                 } else {
-                    alert('授權碼錯誤');
+                    errorCount++;
+                    
+                    if(errorCount >= MAX_ERRORS) {
+                        // 觸發緊急模式
+                        document.getElementById('auth-screen').classList.add('hidden');
+                        document.getElementById('emergency-screen').classList.remove('hidden');
+                        // 這裡可以選擇清除 localstorage 增加擬真感
+                        // localStorage.clear();
+                    } else {
+                        // UI 紅色提示
+                        authInput.classList.add('input-error');
+                        errorHint.classList.remove('hidden');
+                        retrySpan.textContent = MAX_ERRORS - errorCount;
+                        
+                        setTimeout(() => {
+                            authInput.classList.remove('input-error');
+                        }, 500);
+                        
+                        authInput.value = '';
+                    }
                 }
             };
-            
-            document.getElementById('logout-btn').onclick = () => location.reload();
-            
-            document.getElementById('tab-wallet').onclick = () => {
-                switchTab('wallet');
-            };
-            
-            document.getElementById('tab-deposit').onclick = () => {
-                switchTab('deposit');
-            };
 
+            document.getElementById('logout-btn').onclick = () => location.reload();
+
+            document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
+            document.getElementById('tab-deposit').onclick = () => switchTab('deposit');
             document.getElementById('deposit-btn').onclick = deposit;
         }
 
@@ -143,7 +181,7 @@
                 notes: note, 
                 time: new Date().toLocaleString() 
             };
-            
+
             walletData.push(record);
             localStorage.setItem('nsb_assets', JSON.stringify(walletData));
             render();
@@ -155,7 +193,7 @@
         function render() {
             const list = document.getElementById('wallet-list');
             const empty = document.getElementById('empty-state');
-            
+
             if(walletData.length > 0) {
                 empty.classList.add('hidden');
                 list.innerHTML = walletData.slice().reverse().map(item => `
@@ -172,7 +210,7 @@
                 empty.classList.remove('hidden');
                 list.innerHTML = '';
             }
-            
+
             const total = walletData.reduce((sum, i) => sum + i.denomination, 0);
             document.getElementById('total-balance').textContent = `NT$ ${total.toLocaleString()}`;
         }
@@ -184,18 +222,6 @@
                 render();
             }
         };
-
-        // 註冊 Service Worker 確保可安裝
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', e => self.skipWaiting());
-                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob));
-            });
-        }
 
         init();
     </script>
