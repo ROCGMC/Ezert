@@ -9,9 +9,9 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/Ezert/index.html",
+  "start_url": "index.html",
   "background_color": "#ffffff",
   "display": "standalone",
-  "scope": "/Ezert/",
+  "scope": "./",
   "theme_color": "#000000"
 }
