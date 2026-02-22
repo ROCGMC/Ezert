@@ -1,23 +1,17 @@
 {
-  "name": "國家安全局情報回覆系統",
-  "short_name": "國安局",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#22c55e",
+  "short_name": "MDM",
+  "name": "mdm",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg",
+      "src": "icon.png",
+      "type": "image/png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "start_url": "./index.html",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#000000"
 }
-
