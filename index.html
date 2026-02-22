@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="資產管理">
+    <meta name="apple-mobile-web-app-title" content="通訊系統">
     <meta name="theme-color" content="#0a0a0a">
 
-    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg">
 
-    <title>國家安全局情報回覆系統</title>
+    <title>國家安全局情報系統</title>
 
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
@@ -20,34 +19,19 @@
     <style>
         * { font-family: 'Noto Sans TC', sans-serif; }
         .font-digital { font-family: 'Orbitron', monospace; }
+        html, body { overscroll-behavior-y: none; overflow: hidden; height: 100%; position: fixed; width: 100%; background-color: #000; color: #22c55e; margin: 0; }
         
-        /* 關鍵修改：鎖定下拉重新整理與過度滾動 */
-        html, body { 
-            overscroll-behavior-y: none; 
-            overflow: hidden; /* 防止整個 body 滾動 */
-            height: 100%;
-            position: fixed; /* 針對 iOS 的強力鎖定 */
-            width: 100%;
-        }
-
         @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); } 50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.6); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        
         .scanline { position: fixed; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to bottom, transparent, rgba(34, 197, 94, 0.1), transparent); animation: scanline 3s linear infinite; pointer-events: none; z-index: 100; }
-        .pulse-border { animation: pulse-glow 2s ease-in-out infinite; }
         .glass-dark { background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
         .btn-classified { background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%); border: 1px solid #22c55e; transition: all 0.3s ease; }
-        .btn-classified:hover { background: #22c55e; color: #000; }
         .input-error { border-color: #ef4444 !important; animation: shake 0.2s ease-in-out 0s 2; color: #ef4444 !important; }
+        .scrollable-content { overflow-y: auto; -webkit-overflow-scrolling: touch; }
         
-        body { -webkit-user-select: none; -webkit-touch-callout: none; background-color: #000; color: #22c55e; margin: 0; }
-
-        /* 讓內容區域可以自行滾動而不影響整體頁面 */
-        .scrollable-content {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        /* 聊天氣泡樣式 */
+        .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; margin-bottom: 8px; }
+        .chat-left { background: #1a1a1a; border: 1px solid #22c55e; align-self: flex-start; }
     </style>
 </head>
 <body class="flex flex-col">
@@ -55,74 +39,78 @@
 
     <div id="auth-screen" class="h-full flex flex-col items-center justify-center p-6 z-10">
         <div class="glass-dark rounded-lg p-8 max-w-md w-full text-center">
-            <div class="mb-6">
-                <img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" alt="NSB" class="w-24 h-24 mx-auto mb-4 opacity-90">
-                <h1 class="text-xl font-bold text-green-400 tracking-wider">中華民國國家安全局</h1>
-                <p class="text-sm text-green-600 mt-1">情報回傳專用軟體</p>
+            <img src="https://upload.wikimedia.org/wikipedia/zh/2/24/ROC_National_Security_Bureau_Seal.svg" alt="NSB" class="w-24 h-24 mx-auto mb-4 opacity-90">
+            <h1 class="text-xl font-bold text-green-400 tracking-wider">國家安全局</h1>
+            <p class="text-xs text-green-600 mb-6">終端存取驗證</p>
+            <input type="password" id="auth-code" inputmode="numeric" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center focus:outline-none" placeholder="OTP CODE" maxlength="6">
+            <p id="error-hint" class="text-red-500 text-[10px] mt-2 hidden">驗證失敗，剩餘重試次數：<span id="retry-count">3</span></p>
+            <button id="auth-btn" class="btn-classified w-full py-3 mt-6 rounded text-green-400 font-medium">認證執行</button>
+        </div>
+    </div>
+
+    <div id="chat-app" class="h-full flex flex-col hidden overflow-hidden">
+        <header class="glass-dark p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <div>
+                    <h1 class="text-sm font-bold text-green-400">加密頻道: ALPHA-7</h1>
+                    <p class="text-[10px] text-green-700">NODE: TAIPEI_CENTRAL</p>
+                </div>
             </div>
-            <div class="border-t border-green-900 my-6"></div>
-            <div class="mb-6">
-                <p id="auth-msg" class="text-xs text-yellow-500 mb-4">注意，未經授權存儲此軟體將依《國家安全法》處置</p>
-                <input type="password" id="auth-code" inputmode="numeric" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital tracking-widest text-center focus:outline-none" placeholder="輸入驗證碼" maxlength="6">
-                <p id="error-hint" class="text-red-500 text-[10px] mt-2 hidden">驗證失敗，剩餘重試次數：<span id="retry-count">3</span></p>
+        </header>
+        
+        <div id="chat-history" class="flex-1 p-4 flex flex-col scrollable-content">
+            <div class="chat-bubble chat-left text-green-800 text-[10px]">系統提示: 頻道已建立 256-bit 加密</div>
+            <div class="chat-bubble chat-left">情報中心: 各單位回報當前區域狀況。</div>
+            <div class="chat-bubble chat-left">第3分隊: 北部防線一切正常，待命中。</div>
+            <div class="chat-bubble chat-left">中心: 收到，維持警戒。</div>
+        </div>
+
+        <div class="p-3 glass-dark flex gap-2">
+            <input type="text" id="chat-input" class="flex-1 bg-black border border-green-900 rounded px-3 py-2 text-sm text-green-400 focus:outline-none" placeholder="請輸入訊息...">
+            <button id="chat-send" class="px-4 py-2 bg-green-900 text-green-400 rounded text-sm">傳送</button>
+        </div>
+    </div>
+
+    <div id="main-app" class="h-full flex flex-col hidden overflow-hidden">
+        <header class="glass-dark p-4 flex items-center justify-between shrink-0 border-b border-green-500">
+            <div>
+                <h1 class="text-lg font-bold text-green-400 italic">資產數據中心</h1>
+                <p class="text-[10px] text-green-700 uppercase tracking-widest">Confidential Data</p>
             </div>
-            <button id="auth-btn" class="btn-classified w-full py-3 rounded text-green-400 font-medium">執行身份驗證</button>
+            <button onclick="location.reload()" class="text-red-500 text-xs border border-red-900 px-2 py-1 rounded">鎖定系統</button>
+        </header>
+
+        <div class="scrollable-content flex-1">
+            <div class="p-4">
+                <div class="glass-dark rounded-lg p-6 border-2 border-green-500 text-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                    <p class="text-xs text-green-600 mb-1 tracking-widest">總計加密餘額</p>
+                    <p id="total-balance" class="text-3xl font-digital font-bold text-green-400">NT$ 0</p>
+                </div>
+            </div>
+            <div class="px-4 flex gap-2">
+                <button id="tab-wallet" class="flex-1 py-2 rounded bg-green-900 text-green-400 text-xs">資產庫存</button>
+                <button id="tab-deposit" class="flex-1 py-2 rounded border border-green-800 text-green-600 text-xs">數據錄入</button>
+            </div>
+            <div id="wallet-view" class="p-4"><div id="wallet-list" class="space-y-3"></div><div id="empty-state" class="text-center py-12 text-green-900">NO DATA</div></div>
+            <div id="deposit-view" class="p-4 hidden">
+                <div class="glass-dark rounded-lg p-6 space-y-4">
+                    <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400 font-digital">
+                        <option value="1000">1,000</option><option value="500">500</option><option value="100">100</option>
+                    </select>
+                    <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-xs text-green-400" placeholder="來源說明 (選填)">
+                    <button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400 font-bold">執行存檔</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="emergency-screen" class="h-full w-full flex flex-col items-center justify-center p-6 bg-red-950 fixed inset-0 z-50 hidden">
         <div class="text-center space-y-6">
-            <div class="text-6xl mb-4">⚠️</div>
-            <h1 class="text-3xl font-bold text-white tracking-tighter">進入應急模式</h1>
-            <div class="p-4 border-2 border-red-500 rounded bg-black text-red-500 font-mono text-sm">
-                偵測到連續非法入侵嘗試<br>
-                系統已鎖定，座標定位中...<br>
-                相關資訊已上傳至國家安全局中心
-            </div>
-            <p class="text-red-400 text-xs animate-pulse">TERMINAL LOCKED BY PROTOCOL 9</p>
-        </div>
-    </div>
-
-    <div id="main-app" class="h-full flex flex-col hidden overflow-hidden">
-        <header class="glass-dark p-4 flex items-center justify-between shrink-0">
-            <div>
-                <h1 class="text-lg font-bold text-green-400">資產管理</h1>
-                <p class="text-xs text-green-700">ASSET MANAGEMENT</p>
-            </div>
-            <button id="logout-btn" class="text-red-500 text-sm border border-red-800 px-3 py-1 rounded">登出</button>
-        </header>
-
-        <div class="scrollable-content flex-1">
-            <div class="p-4">
-                <div class="glass-dark rounded-lg p-6 pulse-border text-center">
-                    <p class="text-xs text-green-600 mb-1">總資產餘額</p>
-                    <p id="total-balance" class="text-3xl font-digital font-bold text-green-400">NT$ 0</p>
-                </div>
-            </div>
-
-            <div class="px-4 flex gap-2">
-                <button id="tab-wallet" class="flex-1 py-2 rounded bg-green-900 text-green-400 text-sm">錢包一覽</button>
-                <button id="tab-deposit" class="flex-1 py-2 rounded border border-green-800 text-green-600 text-sm">存入資產</button>
-            </div>
-
-            <div id="wallet-view" class="p-4">
-                <div id="wallet-list" class="space-y-3"></div>
-                <div id="empty-state" class="text-center py-12 text-green-800">暫無加密資產記錄</div>
-            </div>
-
-            <div id="deposit-view" class="p-4 hidden">
-                <div class="glass-dark rounded-lg p-6 space-y-4">
-                    <label class="block text-xs text-green-600">選擇面額</label>
-                    <select id="denomination" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400">
-                        <option value="1000">NT$ 1,000</option>
-                        <option value="500">NT$ 500</option>
-                        <option value="100">NT$ 100</option>
-                        <option value="50">NT$ 50</option>
-                        <option value="10">NT$ 10</option>
-                    </select>
-                    <input type="text" id="notes" class="w-full bg-black border border-green-800 rounded px-4 py-3 text-green-400" placeholder="備註資訊 (選填)">
-                    <button id="deposit-btn" class="btn-classified w-full py-3 rounded text-green-400 font-bold"> 確認存入資料庫 </button>
-                </div>
+            <div class="text-6xl mb-4 animate-bounce">⚠️</div>
+            <h1 class="text-2xl font-bold text-white tracking-widest">應急應變程序</h1>
+            <div class="p-4 border-2 border-red-500 rounded bg-black text-red-500 font-mono text-xs text-left">
+                [警告] 連續非法嘗試驗證<br>[追蹤] IP 位置: <span id="client-ip">FETCHING...</span><br>[處理] 系統永久鎖定
             </div>
         </div>
     </div>
@@ -132,58 +120,76 @@
         let errorCount = 0;
         const MAX_ERRORS = 3;
 
-        // 鎖定下拉重新整理的 JS 補丁
-        document.addEventListener('touchmove', function(e) {
-            if (e.target.closest('.scrollable-content')) return; // 允許列表滾動
-            e.preventDefault(); // 禁止其他地方的滑動觸發重新整理
-        }, { passive: false });
+        // 禁止下拉重新整理
+        document.addEventListener('touchmove', e => { if (!e.target.closest('.scrollable-content')) e.preventDefault(); }, { passive: false });
+
+        async function fetchIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                document.getElementById('client-ip').textContent = data.ip;
+            } catch (e) { document.getElementById('client-ip').textContent = 'ERR:TRACKING_FAIL'; }
+        }
 
         function init() {
             const authBtn = document.getElementById('auth-btn');
             const authInput = document.getElementById('auth-code');
-            const errorHint = document.getElementById('error-hint');
-            const retrySpan = document.getElementById('retry-count');
+            const chatInput = document.getElementById('chat-input');
+            const chatSend = document.getElementById('chat-send');
 
+            // 登入驗證
             authBtn.onclick = () => {
                 const code = authInput.value;
                 if(code === '981103' || code === '990420') {
                     document.getElementById('auth-screen').classList.add('hidden');
-                    document.getElementById('main-app').classList.remove('hidden');
+                    document.getElementById('chat-app').classList.remove('hidden');
                     errorCount = 0;
-                    render();
                 } else {
                     errorCount++;
                     if(errorCount >= MAX_ERRORS) {
                         document.getElementById('auth-screen').classList.add('hidden');
                         document.getElementById('emergency-screen').classList.remove('hidden');
+                        fetchIP();
                     } else {
                         authInput.classList.add('input-error');
-                        errorHint.classList.remove('hidden');
-                        retrySpan.textContent = MAX_ERRORS - errorCount;
+                        document.getElementById('error-hint').classList.remove('hidden');
+                        document.getElementById('retry-count').textContent = MAX_ERRORS - errorCount;
                         setTimeout(() => authInput.classList.remove('input-error'), 500);
                         authInput.value = '';
                     }
                 }
             };
 
-            document.getElementById('logout-btn').onclick = () => location.reload();
+            // 聊天介面功能與隱藏命令
+            const handleChat = () => {
+                const msg = chatInput.value.trim();
+                if(msg === '/a') {
+                    document.getElementById('chat-app').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+                    render();
+                } else if(msg !== "") {
+                    // 模擬通訊
+                    const hist = document.getElementById('chat-history');
+                    hist.innerHTML += `<div class="chat-bubble chat-left text-green-300">我: ${msg}</div>`;
+                    chatInput.value = '';
+                    hist.scrollTop = hist.scrollHeight;
+                }
+            };
+
+            chatSend.onclick = handleChat;
+            chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChat(); });
+
+            // 資產管理介面邏輯
             document.getElementById('tab-wallet').onclick = () => switchTab('wallet');
             document.getElementById('tab-deposit').onclick = () => switchTab('deposit');
             document.getElementById('deposit-btn').onclick = deposit;
         }
 
         function switchTab(tab) {
-            if(tab === 'wallet') {
-                document.getElementById('wallet-view').classList.remove('hidden');
-                document.getElementById('deposit-view').classList.add('hidden');
-                document.getElementById('tab-wallet').className = 'flex-1 py-2 rounded bg-green-900 text-green-400 text-sm';
-                document.getElementById('tab-deposit').className = 'flex-1 py-2 rounded border border-green-800 text-green-600 text-sm';
-            } else {
-                document.getElementById('deposit-view').classList.remove('hidden');
-                document.getElementById('wallet-view').classList.add('hidden');
-                document.getElementById('tab-deposit').className = 'flex-1 py-2 rounded bg-green-900 text-green-400 text-sm';
-                document.getElementById('tab-wallet').className = 'flex-1 py-2 rounded border border-green-800 text-green-600 text-sm';
-            }
+            document.getElementById('wallet-view').classList.toggle('hidden', tab !== 'wallet');
+            document.getElementById('deposit-view').classList.toggle('hidden', tab !== 'deposit');
+            document.getElementById('tab-wallet').className = tab === 'wallet' ? 'flex-1 py-2 rounded bg-green-900 text-green-400 text-xs' : 'flex-1 py-2 rounded border border-green-800 text-green-600 text-xs';
+            document.getElementById('tab-deposit').className = tab === 'deposit' ? 'flex-1 py-2 rounded bg-green-900 text-green-400 text-xs' : 'flex-1 py-2 rounded border border-green-800 text-green-600 text-xs';
         }
 
         function deposit() {
@@ -193,7 +199,6 @@
             localStorage.setItem('nsb_assets', JSON.stringify(walletData));
             render();
             document.getElementById('notes').value = '';
-            alert('資產已加密存入');
             switchTab('wallet');
         }
 
@@ -203,25 +208,21 @@
             if(walletData.length > 0) {
                 empty.classList.add('hidden');
                 list.innerHTML = walletData.slice().reverse().map(item => `
-                    <div class="glass-dark rounded-lg p-4 flex justify-between items-center">
+                    <div class="glass-dark rounded-lg p-3 flex justify-between items-center border-l-2 border-green-500">
                         <div>
                             <p class="font-digital text-green-400 text-lg">NT$ ${item.denomination}</p>
-                            <p class="text-[10px] text-green-800">${item.time}</p>
-                            <p class="text-xs text-green-600 mt-1">${item.notes || '機密備註'}</p>
+                            <p class="text-[10px] text-green-800">${item.time} | ${item.notes || 'INTERNAL'}</p>
                         </div>
-                        <button onclick="removeItem(${item.id})" class="text-red-900 text-xs border border-red-900 px-2 py-1 rounded">移除</button>
+                        <button onclick="removeItem(${item.id})" class="text-red-900 text-xs px-2 py-1">刪除</button>
                     </div>
                 `).join('');
-            } else {
-                empty.classList.remove('hidden');
-                list.innerHTML = '';
-            }
+            } else { empty.classList.remove('hidden'); list.innerHTML = ''; }
             const total = walletData.reduce((sum, i) => sum + i.denomination, 0);
             document.getElementById('total-balance').textContent = `NT$ ${total.toLocaleString()}`;
         }
 
         window.removeItem = (id) => {
-            if(confirm('確認從資料庫抹除此項資產？')) {
+            if(confirm('確認抹除數據？')) {
                 walletData = walletData.filter(i => i.id !== id);
                 localStorage.setItem('nsb_assets', JSON.stringify(walletData));
                 render();
