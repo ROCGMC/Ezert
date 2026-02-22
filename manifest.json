@@ -1,6 +1,6 @@
 {
   "short_name": "MDM",
-  "name": "MDM Progressive Web App",
+  "name": "MDM Ezert App",
   "icons": [
     {
       "src": "icon.png",
@@ -9,9 +9,9 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "index.html",
+  "start_url": "/Ezert/index.html",
   "background_color": "#ffffff",
   "display": "standalone",
-  "scope": "./",
+  "scope": "/Ezert/",
   "theme_color": "#000000"
 }
