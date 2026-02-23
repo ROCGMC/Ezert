@@ -4,58 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>國軍 MDM V7.11</title>
+
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#000000">
+
     <style>
+        :root {
+            --mdm-green: #00FF00;
+            --btn-normal: #90ee90;
+            --btn-active: #70c070;
+        }
+
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #00FF00; /* 螢光綠 */
+            background-color: var(--mdm-green);
             font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
             overflow: hidden; display: flex; flex-direction: column;
+            user-select: none; /* 防止文字被選取 */
         }
+
+        /* 頂部狀態列 */
         .header {
             background: #000; color: white; padding: 10px 15px;
             display: flex; justify-content: space-between; font-size: 14px;
+            cursor: pointer;
         }
+
+        .header:active { background: #333; }
+
+        /* 主內容區 */
         .main {
             flex: 1; display: flex; flex-direction: column; align-items: center;
             padding-top: 40px; text-align: center;
         }
+
         .mode-title { font-size: 82px; font-weight: 900; margin: 10px 0; letter-spacing: 5px; }
         .current-time { font-size: 24px; font-weight: bold; margin-bottom: 30px; }
+
+        /* 按鈕樣式與回饋 */
         .mdm-btn {
-            background-color: #90ee90; border: 1px solid #70c070;
+            background-color: var(--btn-normal); border: 1px solid #70c070;
             padding: 12px 30px; margin: 10px 0; border-radius: 4px;
             width: 260px; font-size: 18px; display: flex; align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background 0.1s;
+            cursor: pointer;
         }
+
+        .mdm-btn:active {
+            background-color: var(--btn-active);
+            transform: translateY(1px);
+        }
+
         .btn-icon { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #333; margin-right: 15px; }
-        .toast {
+
+        /* Exception 彈窗 */
+        #exceptionToast {
             position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(40, 40, 40, 0.95); color: white;
             padding: 20px; border-radius: 25px; width: 85%; max-width: 320px;
-            font-size: 13px; line-height: 1.4; word-break: break-all;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; font-family: monospace;
+            font-size: 13.5px; line-height: 1.4; word-break: break-all;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 9999; 
+            font-family: monospace;
+            display: block; /* 預設顯示 */
+            cursor: pointer;
         }
+
         .footer { color: red; text-align: center; font-weight: bold; padding-bottom: 20px; font-size: 18px; }
     </style>
 </head>
 <body>
-    <div class="header"><span>🛡️ 國軍 MDM V7.11</span><span>系統選單</span></div>
+
+    <div class="header" onclick="location.reload()">
+        <span>🛡️ 國軍 MDM V7.11</span>
+        <span>系統選單</span>
+    </div>
+
     <div class="main">
-        <div style="font-weight: bold;">結束時間：119/05/14 21:11</div>
+        <div style="font-weight: bold;">結束時間：114/05/14 21:11</div>
         <div class="mode-title">任務模式</div>
-        <div id="clock" class="current-time">05/14 21:16:23</div>
-        <div class="mdm-btn"><div class="btn-icon" style="background: white;"></div>上鎖:進入管制模式</div>
-        <div class="mdm-btn"><div class="btn-icon" style="background: red;"></div>解鎖:離開管制模式</div>
+        <div id="clock" class="current-time">--/-- --:--:--</div>
+
+        <div class="mdm-btn" onclick="toggleToast()">
+            <div class="btn-icon" style="background: white;"></div>
+            上鎖:進入管制模式
+        </div>
+        <div class="mdm-btn" onclick="toggleToast()">
+            <div class="btn-icon" style="background: red;"></div>
+            解鎖:離開管制模式
+        </div>
     </div>
-    <div class="toast">
-        安全模式
+
+    <div id="exceptionToast" onclick="this.style.display='none'">
+        Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified:
+        <br><br>
+        certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=<br>
+        DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW
     </div>
+
     <div class="footer">仿冒必究</div>
+
     <script>
+        // 1. 自動更新時鐘
         function updateClock() {
             const now = new Date();
             const m = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -66,7 +118,22 @@
             document.getElementById('clock').textContent = `${m}/${d} ${h}:${min}:${s}`;
         }
         setInterval(updateClock, 1000);
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        updateClock();
+
+        // 2. 按鈕控制彈窗顯示
+        function toggleToast() {
+            const toast = document.getElementById('exceptionToast');
+            toast.style.display = (toast.style.display === 'none') ? 'block' : 'none';
+        }
+
+        // 3. 強制登出所有的 Service Worker 並清除快取
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
     </script>
 </body>
 </html>
