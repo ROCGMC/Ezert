@@ -4,159 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>國軍 MDM V7.11</title>
-
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#000000">
 
     <style>
-        :root {
-            --mdm-green: #00FF00;
-            --mdm-dark: #1a1a1a;
-            --mdm-toast: rgba(50, 50, 50, 0.95);
-        }
-
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--mdm-green);
-            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #00FF00; /* 國軍綠 */
+            font-family: "微軟正黑體", sans-serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
-
-        /* 頂部狀態列 */
         .header {
-            background-color: var(--mdm-dark);
-            color: white;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
+            background: #000; color: white; padding: 10px 15px;
+            display: flex; justify-content: space-between; font-size: 14px;
         }
-
-        /* 任務模式主標題 */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 40px;
-            text-align: center;
+        .main {
+            display: flex; flex-direction: column; align-items: center;
+            padding-top: 40px; text-align: center;
         }
-
-        .status-time {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .mode-title { font-size: 80px; font-weight: 900; margin: 15px 0; }
+        
+        /* 彈窗：模仿圖片中的 Exception */
+        .toast {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(35, 35, 35, 0.95); color: white;
+            padding: 20px; border-radius: 25px; width: 85%; max-width: 320px;
+            font-size: 13px; line-height: 1.4; word-break: break-all;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 999;
+            font-family: monospace;
         }
-
-        .mode-title {
-            font-size: 82px;
-            font-weight: 900;
-            margin: 10px 0;
-            letter-spacing: 5px;
-        }
-
-        .current-time {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
-
-        /* 按鈕模擬 */
-        .mdm-btn {
-            background-color: #90ee90;
-            border: 1px solid #70c070;
-            padding: 12px 30px;
-            margin: 10px 0;
-            border-radius: 4px;
-            width: 260px;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .btn-icon {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            border: 2px solid #333;
-            margin-right: 15px;
-        }
-
-        /* 螢幕中間的 Exception 彈窗 */
-        .mdm-exception-toast {
-            position: fixed;
-            top: 55%; /* 稍微偏下方 */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--mdm-toast);
-            color: white;
-            width: 85%;
-            max-width: 320px;
-            padding: 20px;
-            border-radius: 25px;
-            font-size: 13.5px;
-            line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            z-index: 9999;
-            word-break: break-all;
-            font-family: monospace; /* 符合開發者錯誤訊息感 */
-        }
-
-        /* 底部警語 */
-        .footer-warning {
-            color: red;
-            font-weight: bold;
-            text-align: center;
-            padding-bottom: 20px;
-            font-size: 18px;
+        .footer {
+            position: absolute; bottom: 20px; width: 100%;
+            color: red; text-align: center; font-weight: bold; font-size: 18px;
         }
     </style>
 </head>
 <body>
-
     <div class="header">
         <span>🛡️ 國軍 MDM V7.11</span>
         <span>系統選單</span>
     </div>
-
-    <div class="main-content">
-        <div class="status-time">結束時間：114/05/14 21:11</div>
+    <div class="main">
+        <div style="font-weight:bold;">結束時間：114/05/14 21:11</div>
         <div class="mode-title">任務模式</div>
-        <div class="current-time">05/14 21:16:23</div>
-
-        <div class="mdm-btn">
-            <div class="btn-icon" style="background: white;"></div>
-            上鎖:進入管制模式
-        </div>
-        <div class="mdm-btn">
-            <div class="btn-icon" style="background: red;"></div>
-            解鎖:離開管制模式
-        </div>
+        <div style="font-size:24px; font-weight:bold;">05/14 21:16:23</div>
     </div>
-
-    <div class="mdm-exception-toast">
+    <div class="toast">
         Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified:
         <br><br>
-        certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=
-        <br>
+        certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=<br>
         DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW
-        <br>
-        subjectAltNames: [*.ncsist.org.tw, ncsist.org.tw]
     </div>
+    <div class="footer">仿冒必究</div>
 
-    <div class="footer-warning">
-        仿冒必究
-    </div>
-
+    <script>
+        // 註冊 Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
