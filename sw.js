@@ -1,20 +1,19 @@
-const CACHE_NAME = 'ezert-v3';
-const ASSETS = [
+const CACHE_NAME = 'mdm-v2'; // 修改這裡的版本號，強制刷新
+const assets = [
   './',
-  'index.html',
-  'manifest.json',
-  'icon.png'
+  './index.html',
+  './manifest.json',
+  './icon.png'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(assets))
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
