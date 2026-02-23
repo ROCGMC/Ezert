@@ -12,7 +12,7 @@
     <style>
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #00FF00; /* 螢光綠 */
+            background-color: #00FF00;
             font-family: "Microsoft JhengHei", sans-serif;
             overflow: hidden; display: flex; flex-direction: column;
             user-select: none;
@@ -27,16 +27,26 @@
         }
         .mode-title { font-size: 82px; font-weight: 900; margin: 10px 0; letter-spacing: 5px; color: #000; }
         .current-time { font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #000; }
+        
+        /* 基本按鈕樣式 */
         .mdm-btn {
             background-color: #90ee90; border: 1px solid #70c070;
             padding: 12px 25px; margin: 8px 0; border-radius: 4px;
             width: 260px; font-size: 18px; display: flex; align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer;
+            transition: all 0.2s;
         }
-        .mdm-btn:active { background-color: #70c070; }
+        
+        /* 上鎖中的紅色樣式 */
+        .mdm-btn.locked {
+            background-color: #FF0000 !important;
+            color: white !important;
+            border-color: #b30000;
+        }
+
+        .mdm-btn:active { transform: scale(0.98); opacity: 0.8; }
         .btn-icon { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #333; margin-right: 15px; }
         
-        /* 彈窗：還原圖片中的 Exception 訊息 */
         #exceptionToast {
             position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
             background: rgba(40, 40, 40, 0.95); color: white;
@@ -44,6 +54,7 @@
             font-size: 13.5px; line-height: 1.45; word-break: break-all;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999;
             font-family: monospace; cursor: pointer;
+            display: none;
         }
         .footer { color: red; text-align: center; font-weight: bold; padding-bottom: 20px; font-size: 18px; }
     </style>
@@ -54,9 +65,18 @@
         <div style="font-weight: bold;">結束時間：114/05/14 21:11</div>
         <div class="mode-title">任務模式</div>
         <div id="clock" class="current-time">--/-- --:--:--</div>
-        <div class="mdm-btn" onclick="toggleToast()"><div class="btn-icon" style="background: white;"></div>上鎖:進入管制模式</div>
-        <div class="mdm-btn" onclick="toggleToast()"><div class="btn-icon" style="background: red;"></div>解鎖:離開管制模式</div>
+        
+        <div id="lockBtn" class="mdm-btn" onclick="doLock()">
+            <div id="lockIcon" class="btn-icon" style="background: white;"></div>
+            <span id="lockText">上鎖:進入管制模式</span>
+        </div>
+        
+        <div class="mdm-btn" onclick="doUnlock()">
+            <div class="btn-icon" style="background: red;"></div>
+            <span>解鎖:離開管制模式</span>
+        </div>
     </div>
+    
     <div id="exceptionToast" onclick="this.style.display='none'">
         Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified:
         <br><br>
@@ -66,7 +86,6 @@
     <div class="footer">仿冒必究</div>
 
     <script>
-        // 更新時鐘
         function updateClock() {
             const now = new Date();
             const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -79,25 +98,28 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        function toggleToast() {
-            const t = document.getElementById('exceptionToast');
-            t.style.display = (t.style.display === 'none') ? 'block' : 'none';
+        function doLock() {
+            const btn = document.getElementById('lockBtn');
+            const txt = document.getElementById('lockText');
+            const icon = document.getElementById('lockIcon');
+            
+            btn.classList.add('locked');
+            txt.innerText = '上鎖中';
+            icon.style.background = 'red'; // 圖示也變色增加真實感
         }
 
-        // 註冊新的 Service Worker
+        function doUnlock() {
+            const btn = document.getElementById('lockBtn');
+            const txt = document.getElementById('lockText');
+            const icon = document.getElementById('lockIcon');
+            
+            btn.classList.remove('locked');
+            txt.innerText = '上鎖:進入管制模式';
+            icon.style.background = 'white';
+        }
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
-                    reg.onupdatefound = () => {
-                        const installingWorker = reg.installing;
-                        installingWorker.onstatechange = () => {
-                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                location.reload(); // 偵測到新版本時自動刷新
-                            }
-                        };
-                    };
-                });
-            });
+            navigator.serviceWorker.register('./sw.js');
         }
     </script>
 </body>
