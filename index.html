@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>國軍 MDM V7.11</title>
+    <title>手機管控系統 MDM V7.11</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <meta name="theme-color" content="#000000">
 
     <style>
+        :root {
+            --bg-unlock: #FFFF00; /* 黃色：解鎖中 */
+            --bg-locked: #FF0000; /* 紅色：未上鎖/上鎖中 */
+            --bg-task: #00FF00;   /* 綠色：任務模式 */
+        }
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #00FF00;
+            background-color: var(--bg-unlock); /* 初始設為黃色 */
             font-family: "Microsoft JhengHei", sans-serif;
             overflow: hidden; display: flex; flex-direction: column;
-            user-select: none;
+            transition: background-color 0.3s;
         }
         .header {
             background: #000; color: white; padding: 12px 15px;
@@ -23,99 +28,94 @@
         }
         .main {
             flex: 1; display: flex; flex-direction: column; align-items: center;
-            padding-top: 40px; text-align: center;
+            padding-top: 30px; text-align: center;
         }
-        .mode-title { font-size: 82px; font-weight: 900; margin: 10px 0; letter-spacing: 5px; color: #000; }
-        .current-time { font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #000; }
+        .status-msg { font-size: 18px; font-weight: bold; margin-bottom: 10px; height: 24px; }
+        .mode-title { font-size: 72px; font-weight: 900; margin: 20px 0; color: #000; }
         
-        /* 基本按鈕樣式 */
+        /* 功能按鈕 */
+        .btn-container { margin-top: 20px; }
         .mdm-btn {
-            background-color: #90ee90; border: 1px solid #70c070;
-            padding: 12px 25px; margin: 8px 0; border-radius: 4px;
-            width: 260px; font-size: 18px; display: flex; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer;
-            transition: all 0.2s;
+            background-color: #f0f0f0; border: 1px solid #ccc;
+            padding: 10px 20px; margin: 10px 0; border-radius: 4px;
+            width: 250px; font-size: 18px; display: flex; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;
         }
+        .btn-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #333; margin-right: 15px; }
         
-        /* 上鎖中的紅色樣式 */
-        .mdm-btn.locked {
-            background-color: #FF0000 !important;
-            color: white !important;
-            border-color: #b30000;
-        }
+        /* 底部盾牌與時間 */
+        .shield-icon { width: 100px; margin-top: 30px; }
+        .footer-time { margin-top: auto; padding-bottom: 15px; font-weight: bold; font-size: 16px; }
 
-        .mdm-btn:active { transform: scale(0.98); opacity: 0.8; }
-        .btn-icon { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #333; margin-right: 15px; }
-        
+        /* Exception 彈窗預設隱藏 */
         #exceptionToast {
-            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(40, 40, 40, 0.95); color: white;
-            padding: 22px; border-radius: 28px; width: 85%; max-width: 320px;
-            font-size: 13.5px; line-height: 1.45; word-break: break-all;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999;
-            font-family: monospace; cursor: pointer;
-            display: none;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(40, 40, 40, 0.95); color: white; padding: 20px;
+            border-radius: 20px; width: 80%; display: none; z-index: 9999; font-size: 13px;
         }
-        .footer { color: red; text-align: center; font-weight: bold; padding-bottom: 20px; font-size: 18px; }
     </style>
 </head>
 <body>
-    <div class="header"><span>🛡️ 國軍 MDM V7.11</span><span onclick="location.reload()">系統選單</span></div>
+    <div class="header">
+        <span>🛡️ 手機管控系統 MDM V7.11</span>
+        <span>系統選單</span>
+    </div>
+
     <div class="main">
-        <div style="font-weight: bold;">結束時間：114/05/14 21:11</div>
-        <div class="mode-title">任務模式</div>
-        <div id="clock" class="current-time">--/-- --:--:--</div>
+        <div id="statusMsg" class="status-msg">解鎖中,尚無定位資訊..</div>
+        <div id="modeTitle" class="mode-title">解鎖中</div>
         
-        <div id="lockBtn" class="mdm-btn" onclick="doLock()">
-            <div id="lockIcon" class="btn-icon" style="background: white;"></div>
-            <span id="lockText">上鎖:進入管制模式</span>
+        <div class="btn-container">
+            <div class="mdm-btn" onclick="setLockState(true)">
+                <div class="btn-dot" style="background: #00FF00;"></div>
+                <span id="lockBtnText">上鎖:進入管制模式</span>
+            </div>
+            <div class="mdm-btn" onclick="setLockState(false)">
+                <div class="btn-dot" style="background: #FF0000;"></div>
+                <span>解鎖:離開管制模式</span>
+            </div>
         </div>
+
+        <img src="icon.png" class="shield-icon" alt="MDM">
         
-        <div class="mdm-btn" onclick="doUnlock()">
-            <div class="btn-icon" style="background: red;"></div>
-            <span>解鎖:離開管制模式</span>
-        </div>
+        <div id="footerClock" class="footer-time">2026-02-23 12:00:00</div>
     </div>
-    
+
     <div id="exceptionToast" onclick="this.style.display='none'">
-        Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified:
-        <br><br>
-        certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=<br>
-        DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW
+        Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified
     </div>
-    <div class="footer">仿冒必究</div>
 
     <script>
         function updateClock() {
             const now = new Date();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
+            const Y = now.getFullYear();
+            const M = String(now.getMonth() + 1).padStart(2, '0');
+            const D = String(now.getDate()).padStart(2, '0');
             const h = String(now.getHours()).padStart(2, '0');
-            const min = String(now.getMinutes()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${m}/${d} ${h}:${min}:${s}`;
+            document.getElementById('footerClock').textContent = `${Y}-${M}-${D} ${h}:${m}:${s}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        function doLock() {
-            const btn = document.getElementById('lockBtn');
-            const txt = document.getElementById('lockText');
-            const icon = document.getElementById('lockIcon');
-            
-            btn.classList.add('locked');
-            txt.innerText = '上鎖中';
-            icon.style.background = 'red'; // 圖示也變色增加真實感
-        }
+        function setLockState(isLocked) {
+            const body = document.body;
+            const msg = document.getElementById('statusMsg');
+            const title = document.getElementById('modeTitle');
+            const lockText = document.getElementById('lockBtnText');
 
-        function doUnlock() {
-            const btn = document.getElementById('lockBtn');
-            const txt = document.getElementById('lockText');
-            const icon = document.getElementById('lockIcon');
-            
-            btn.classList.remove('locked');
-            txt.innerText = '上鎖:進入管制模式';
-            icon.style.background = 'white';
+            if (isLocked) {
+                body.style.backgroundColor = 'var(--bg-locked)';
+                msg.textContent = '未上鎖，不得進入管制園區';
+                title.textContent = '任務模式'; // 依要求改為任務模式
+                lockText.textContent = '上鎖中';
+            } else {
+                body.style.backgroundColor = 'var(--bg-unlock)';
+                msg.textContent = '解鎖中,尚無定位資訊..';
+                title.textContent = '解鎖中';
+                lockText.textContent = '上鎖:進入管制模式';
+            }
         }
 
         if ('serviceWorker' in navigator) {
