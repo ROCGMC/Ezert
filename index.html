@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>國軍 MDM V7.11</title>
+    <title>國軍行動裝置管理系統</title>
 
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon.png">
@@ -12,9 +12,9 @@
 
     <style>
         :root {
-            --mdm-green: #00FF00;
-            --btn-normal: #90ee90;
-            --btn-active: #70c070;
+            --mdm-green: #00FF00; /* 國軍標準螢光綠 */
+            --mdm-dark: #1a1a1a;
+            --btn-color: #90ee90;
         }
 
         body, html {
@@ -22,17 +22,15 @@
             background-color: var(--mdm-green);
             font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
             overflow: hidden; display: flex; flex-direction: column;
-            user-select: none; /* 防止文字被選取 */
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
         /* 頂部狀態列 */
         .header {
-            background: #000; color: white; padding: 10px 15px;
+            background: #000; color: white; padding: 12px 15px;
             display: flex; justify-content: space-between; font-size: 14px;
-            cursor: pointer;
+            font-weight: bold; z-index: 10;
         }
-
-        .header:active { background: #333; }
 
         /* 主內容區 */
         .main {
@@ -40,58 +38,74 @@
             padding-top: 40px; text-align: center;
         }
 
-        .mode-title { font-size: 82px; font-weight: 900; margin: 10px 0; letter-spacing: 5px; }
-        .current-time { font-size: 24px; font-weight: bold; margin-bottom: 30px; }
+        .status-text { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        
+        /* 巨大標題 */
+        .mode-title { 
+            font-size: 82px; font-weight: 900; margin: 10px 0; 
+            letter-spacing: 5px; color: #000;
+        }
 
-        /* 按鈕樣式與回饋 */
+        .current-time { font-size: 26px; font-weight: bold; margin-bottom: 30px; }
+
+        /* 按鈕風格 */
         .mdm-btn {
-            background-color: var(--btn-normal); border: 1px solid #70c070;
-            padding: 12px 30px; margin: 10px 0; border-radius: 4px;
-            width: 260px; font-size: 18px; display: flex; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background 0.1s;
-            cursor: pointer;
+            background-color: var(--btn-color); border: 1px solid #70c070;
+            padding: 12px 20px; margin: 8px 0; border-radius: 4px;
+            width: 280px; font-size: 18px; display: flex; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.1s;
+            cursor: pointer; color: #000;
         }
 
         .mdm-btn:active {
-            background-color: var(--btn-active);
-            transform: translateY(1px);
+            background-color: #70c070; transform: scale(0.98);
         }
 
-        .btn-icon { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #333; margin-right: 15px; }
+        .btn-icon { 
+            width: 14px; height: 14px; border-radius: 50%; 
+            border: 2px solid #333; margin-right: 15px; 
+        }
 
-        /* Exception 彈窗 */
+        /* Exception 彈窗樣式 */
         #exceptionToast {
-            position: fixed; top: 55%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(40, 40, 40, 0.95); color: white;
-            padding: 20px; border-radius: 25px; width: 85%; max-width: 320px;
-            font-size: 13.5px; line-height: 1.4; word-break: break-all;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 9999; 
-            font-family: monospace;
-            display: block; /* 預設顯示 */
-            cursor: pointer;
+            position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(45, 45, 45, 0.96); color: white;
+            padding: 22px; border-radius: 28px; width: 88%; max-width: 320px;
+            font-size: 13.5px; line-height: 1.45; word-break: break-all;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6); z-index: 9999; 
+            font-family: Consolas, Monaco, monospace;
+            display: block; cursor: pointer;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .footer { color: red; text-align: center; font-weight: bold; padding-bottom: 20px; font-size: 18px; }
+        @keyframes popIn {
+            from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .footer { 
+            position: absolute; bottom: 20px; width: 100%;
+            color: red; text-align: center; font-weight: bold; font-size: 18px; 
+        }
     </style>
 </head>
 <body>
 
-    <div class="header" onclick="location.reload()">
+    <div class="header">
         <span>🛡️ 國軍 MDM V7.11</span>
-        <span>系統選單</span>
+        <span onclick="location.reload()">系統選單</span>
     </div>
 
     <div class="main">
-        <div style="font-weight: bold;">結束時間：114/05/14 21:11</div>
+        <div class="status-text">結束時間：114/05/14 21:11</div>
         <div class="mode-title">任務模式</div>
         <div id="clock" class="current-time">--/-- --:--:--</div>
 
-        <div class="mdm-btn" onclick="toggleToast()">
+        <div class="mdm-btn" onclick="showToast()">
             <div class="btn-icon" style="background: white;"></div>
             上鎖:進入管制模式
         </div>
-        <div class="mdm-btn" onclick="toggleToast()">
+        <div class="mdm-btn" onclick="showToast()">
             <div class="btn-icon" style="background: red;"></div>
             解鎖:離開管制模式
         </div>
@@ -101,7 +115,8 @@
         Exception3-SSLPeerUnverifiedException: Hostname mdmservice.ncsist.org.tw not verified:
         <br><br>
         certificate: sha1/kjAdkxFzO3vLUsewurtgqUFp3oY=<br>
-        DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW
+        DN: CN=*.ncsist.org.tw,O=National Chung-Shan Institute of Science & Technology,L=Taoyuan,ST=Taiwan,C=TW<br>
+        subjectAltNames: [*.ncsist.org.tw, ncsist.org.tw]
     </div>
 
     <div class="footer">仿冒必究</div>
@@ -110,27 +125,30 @@
         // 1. 自動更新時鐘
         function updateClock() {
             const now = new Date();
-            const m = (now.getMonth() + 1).toString().padStart(2, '0');
-            const d = now.getDate().toString().padStart(2, '0');
-            const h = now.getHours().toString().padStart(2, '0');
-            const min = now.getMinutes().toString().padStart(2, '0');
-            const s = now.getSeconds().toString().padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock').textContent = `${m}/${d} ${h}:${min}:${s}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. 按鈕控制彈窗顯示
-        function toggleToast() {
-            const toast = document.getElementById('exceptionToast');
-            toast.style.display = (toast.style.display === 'none') ? 'block' : 'none';
+        // 2. 控制彈窗顯示
+        function showToast() {
+            document.getElementById('exceptionToast').style.display = 'block';
         }
 
-        // 3. 強制登出所有的 Service Worker 並清除快取
+        // 3. 核心：暴力註銷所有舊的 Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                if (registrations.length > 0) {
+                    for (let registration of registrations) {
+                        registration.unregister();
+                    }
+                    console.log('已清理舊版快取，正在刷新...');
+                    setTimeout(() => location.reload(true), 500);
                 }
             });
         }
