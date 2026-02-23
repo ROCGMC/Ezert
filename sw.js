@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mdm-cache-v1'; // 更改此版本號可強制更新全體客戶端
+const CACHE_NAME = 'mdm-cache-v2'; // 更改此版本號可強制更新全體客戶端
 const ASSETS = [
   './',
   './index.html',
