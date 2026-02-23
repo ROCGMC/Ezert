@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mdm-v10'; 
+const CACHE_NAME = 'mdm-v11'; 
 const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {
